@@ -105,7 +105,7 @@ packages:
       path: "."
       ref: null-safety-2
       resolved-ref: "2b9b7359d387882b672126ef905bbb497f1de00b"
-      url: "git@github.com:asartalo/git_hooks.git"
+      url: "https://github.com/asartalo/git_hooks.git"
     source: git
     version: "0.2.0"
   glob:
