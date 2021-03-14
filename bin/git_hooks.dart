@@ -18,15 +18,16 @@ Future<bool> commitMsg() async {
 }
 
 Future<bool> preCommit() async {
-  var response = true;
+  var valid = true;
   try {
     final result = await Process.run('dartanalyzer', ['lib']);
-    print(result.stdout);
     if (result.exitCode != 0) {
-      response = false;
+      valid = false;
+      print(result.stdout);
     }
   } catch (e) {
-    response = false;
+    valid = false;
+    print(e);
   }
-  return response;
+  return valid;
 }
