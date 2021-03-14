@@ -1,0 +1,50 @@
+name: build
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v2
+
+  test:
+    name: Tests
+    # This job will run on ubuntu virtual machine
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: cedx/setup-dart@v2
+      with:
+        release-channel: stable
+
+    # Checkout
+    - uses: actions/checkout@v2
+
+    - name: Get dependencies
+      run: pub get
+
+    - name: Check dart formatting
+      run: dart format --set-exit-if-changed .
+
+    - name: Statically analyze the Dart code for any errors.
+      run: dart analyze .
+
+    - name: Run Tests with coverage
+      run: dart test --coverage="coverage"
+
+    - name: Prepare coverage
+      run: pub run coverage:format_coverage --lcov --in=coverage --out=lcov.info --packages=.packages --report-on=lib
+
+    - name: Upload coverage
+      uses: coverallsapp/github-action@v1.1.2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: lcov.info

@@ -1,0 +1,20 @@
+name: release_tools
+description: A collection of scripts to help with creating releases and publishing libraries.
+version: 0.1.0
+homepage: https://github.com/asartalo/release_tools
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  conventional: ^0.1.0
+  equatable: ^2.0.0
+
+dev_dependencies:
+  # git_hooks: ^2.0.0 # use this when null-safe version is officially available
+  git_hooks:
+    git:
+      url: git@github.com:asartalo/git_hooks.git
+      ref: null-safety-2
+  lint: ^1.5.1
+  test: ^1.14.4
