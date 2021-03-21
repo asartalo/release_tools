@@ -24,4 +24,4 @@ dev_dependencies:
   test: ^1.14.4
 
 executables:
-  bump_version:
+  update_version:
