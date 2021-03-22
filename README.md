@@ -2,6 +2,9 @@
 
 A collection of scripts to help with creating releases for publishing libraries and dart packages.
 
+
+[![build](https://github.com/asartalo/release_tools/actions/workflows/ci.yml/badge.svg)](https://github.com/asartalo/conventional/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/asartalo/release_tools/badge.svg?branch=main)](https://coveralls.io/github/asartalo/release_tools?branch=main)
+
 ## Features
 
 **Available Scripts:**
