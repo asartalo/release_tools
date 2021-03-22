@@ -18,6 +18,7 @@ Future<bool> commitMsg() async {
 }
 
 Future<bool> preCommit() async {
+  print('Running dart analyzer...');
   var valid = true;
   try {
     final result = await Process.run('dartanalyzer', ['lib']);
