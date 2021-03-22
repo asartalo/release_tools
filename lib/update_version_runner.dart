@@ -31,7 +31,7 @@ class UpdateVersionRunner {
     final pubspecFile = await _getPubspecFile();
     final newVersion = _getNewVersion(parsed.rest);
     await _updateVersionOnFile(pubspecFile, newVersion);
-    printer.println('Updated version to "$newVersion".');
+    printer.printSuccess('Updated version to "$newVersion".');
   }
 
   void showHelpText() {

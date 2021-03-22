@@ -7,7 +7,7 @@ const fs = LocalFileSystem();
 
 Future<void> main(List<String> arguments) async {
   exitCode = 0;
-  final printer = TruePrinter();
+  final printer = TruePrinter(stdout: stdout, stderr: stderr);
   final workingDir = fs.path.canonicalize(Directory.current.path);
   final runner = UpdateVersionRunner(
     fs: fs,

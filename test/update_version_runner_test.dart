@@ -5,7 +5,7 @@ import 'package:release_tools/printer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('UpdateVersionRunner', () {
+  group(UpdateVersionRunner, () {
     late UpdateVersionRunner runner;
     late FileSystem fs;
     late String workingDir;
@@ -77,6 +77,21 @@ dev_dependencies:
 
       test('it shows updated message', () {
         expect(printer.prints.last, equals('Updated version to "1.0.0".'));
+      });
+    });
+
+    group('help', () {
+      setUp(() async {
+        await runner.run(['--help']);
+      });
+
+      test('it prints help text', () {
+        final helpText = printer.prints.join('\n');
+        expect(
+          helpText,
+          contains('Updates the version number on a pubspec.yaml file.'),
+        );
+        expect(helpText, contains('Usage:'));
       });
     });
   });
