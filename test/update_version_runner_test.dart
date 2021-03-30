@@ -80,19 +80,14 @@ dev_dependencies:
       });
     });
 
-    group('help', () {
-      setUp(() async {
-        await runner.run(['--help']);
-      });
-
-      test('it prints help text', () {
-        final helpText = printer.prints.join('\n');
-        expect(
-          helpText,
-          contains('Updates the version number on a pubspec.yaml file.'),
-        );
-        expect(helpText, contains('Usage:'));
-      });
+    test('it prints help text', () async {
+      await runner.run(['--help']);
+      final helpText = printer.prints.join('\n');
+      expect(
+        helpText,
+        contains('Updates the version number on a pubspec.yaml file.'),
+      );
+      expect(helpText, contains('Usage:'));
     });
   });
 }

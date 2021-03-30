@@ -1,9 +1,11 @@
 import 'package:file/file.dart';
-import 'package:release_tools/printer.dart';
 import 'package:yaml/yaml.dart';
 import 'package:args/args.dart';
 
-class UpdateVersionRunner {
+import 'printer.dart';
+import 'runner.dart';
+
+class UpdateVersionRunner extends Runner {
   final FileSystem fs;
   final String workingDir;
   final Printer printer;
@@ -22,6 +24,7 @@ class UpdateVersionRunner {
     );
   }
 
+  @override
   Future<void> run(List<String> arguments) async {
     final parsed = _parser.parse(arguments);
     if (parsed['help'] as bool) {
@@ -69,6 +72,7 @@ class UpdateVersionRunner {
     await pubspecFile.writeAsString(newContents);
   }
 
+  @override
   String helpText() {
     return '''
 Updates the version number on a pubspec.yaml file.
