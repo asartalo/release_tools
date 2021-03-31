@@ -25,4 +25,4 @@ dev_dependencies:
   test: ^1.14.4
 
 executables:
-  update_version:
+  release_tools:

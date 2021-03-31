@@ -1,22 +1,26 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:release_tools/update_version_runner.dart';
+import 'package:release_tools/git_exec.dart';
+import 'package:release_tools/release_tools_runner.dart';
+import 'package:release_tools/update_version_command.dart';
 import 'package:release_tools/printer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group(UpdateVersionRunner, () {
-    late UpdateVersionRunner runner;
+  group(UpdateVersionCommand, () {
+    late ReleaseToolsRunner runner;
     late FileSystem fs;
     late String workingDir;
     late StubPrinter printer;
+    late StubGitExec git;
 
     setUp(() {
       fs = MemoryFileSystem();
       workingDir = fs.systemTempDirectory.path;
       printer = StubPrinter();
-      runner =
-          UpdateVersionRunner(fs: fs, workingDir: workingDir, printer: printer);
+      git = StubGitExec();
+      runner = ReleaseToolsRunner(
+          git: git, workingDir: workingDir, printer: printer, fs: fs);
     });
 
     Future<void> validYamlFile() async {
@@ -32,7 +36,7 @@ void main() {
       test('throws MissingPubspecError when there is no pubspec.yaml',
           () async {
         expect(
-          () => runner.run(['2.0.0']),
+          () => runner.run(['update_version', '2.0.0']),
           throwsA(const TypeMatcher<MissingPubspecError>()),
         );
       });
@@ -44,7 +48,7 @@ void main() {
 
         test('throws ArgumentError when no version is provided', () async {
           expect(
-            () => runner.run([]),
+            () => runner.run(['update_version']),
             throwsA(const TypeMatcher<ArgumentError>()),
           );
         });
@@ -54,7 +58,7 @@ void main() {
     group('writes version', () {
       setUp(() async {
         await validYamlFile();
-        await runner.run(['1.0.0']);
+        await runner.run(['update_version', '1.0.0']);
       });
 
       test('updates pubspec.yaml', () async {
@@ -81,7 +85,7 @@ dev_dependencies:
     });
 
     test('it prints help text', () async {
-      await runner.run(['--help']);
+      await runner.run(['update_version', '--help']);
       final helpText = printer.prints.join('\n');
       expect(
         helpText,

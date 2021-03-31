@@ -1,27 +1,35 @@
 import 'package:conventional/conventional.dart';
+import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:release_tools/git_exec.dart';
-import 'package:release_tools/next_version_runner.dart';
+import 'package:release_tools/next_version_command.dart';
 import 'package:release_tools/printer.dart';
+import 'package:release_tools/release_tools_runner.dart';
 import 'package:test/test.dart';
 
 import 'fixtures.dart';
 
 void main() {
-  group(NextVersionRunner, () {
-    late NextVersionRunner runner;
-    late StubGitExec git;
+  group(NextVersionCommand, () {
+    late ReleaseToolsRunner runner;
+    late FileSystem fs;
+    late String workingDir;
     late StubPrinter printer;
+    late StubGitExec git;
     const originalVersion = '1.0.0';
 
     setUp(() {
-      git = StubGitExec();
+      fs = MemoryFileSystem();
+      workingDir = fs.systemTempDirectory.path;
       printer = StubPrinter();
-      runner = NextVersionRunner(git: git, printer: printer);
+      git = StubGitExec();
+      runner = ReleaseToolsRunner(
+          git: git, workingDir: workingDir, printer: printer, fs: fs);
     });
 
     group('errors', () {
       test('throws ArgumentError when no version is provided', () {
-        expect(() => runner.run([]), throwsArgumentError);
+        expect(() => runner.run(['next_version']), throwsArgumentError);
       });
     });
 
@@ -61,7 +69,7 @@ void main() {
           });
 
           test(data.description, () async {
-            await runner.run([originalVersion]);
+            await runner.run(['next_version', originalVersion]);
             expect(printer.prints.first, equals(data.result));
           });
         });
@@ -69,16 +77,17 @@ void main() {
 
       test('when a commit id is passed, it passes it to git', () async {
         const commitId = '43cf9b78f77a0180ad408cb87e8a774a530619ce';
-        await runner.run(['--from', commitId, originalVersion]);
+        await runner.run(['next_version', '--from', commitId, originalVersion]);
         expect(git.commitsFrom, equals(commitId));
       });
 
       test('it prints help text', () async {
-        await runner.run(['--help']);
+        await runner.run(['next_version', '--help']);
         final helpText = printer.prints.join('\n');
         expect(
           helpText,
-          contains('Gets the next version number based on commits.'),
+          contains(
+              'Gets the next version number based on conventional commits.'),
         );
         expect(helpText, contains('Usage:'));
       });
