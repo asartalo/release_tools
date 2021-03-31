@@ -40,7 +40,7 @@ $ pub global activate release_tools
 The following command will update the version on `pubspec.yaml` to verion 1.0.1
 
 ```sh
-$ pub run release_tools update_version 1.0.1
+$ release_tools update_version 1.0.1
 ```
 
 ## Next Version
@@ -48,7 +48,7 @@ $ pub run release_tools update_version 1.0.1
 The following command will incremeent the commands based on the commit logs that follow the conventional commit spec.
 
 ```sh
-$ pub run release_tools next_version 1.0.1
+$ release_tools next_version 1.0.1
 # 1.1.0
 ```
 
@@ -68,7 +68,7 @@ BREAKING-CHANGE: this changes everything
 By default it considers all the logs from the beginning but you can also specify a starting range:
 
 ```sh
-$ pub run release_tools next_version --from=abcde1234 1.0.1
+$ release_tools next_version --from=abcde1234 1.0.1
 ```
 
 ...where `--from` should point to a commit id.
