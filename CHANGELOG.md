@@ -1,4 +1,8 @@
-# 0.1.1 (2021-03-22)
+# 0.2.0 (2021-03-31)
+
+## BREAKING CHANGES
+
+- release_tools executable replaces update_version and next_version as commands
 
 ## Features
 

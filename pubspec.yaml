@@ -1,6 +1,6 @@
 name: release_tools
 description: A collection of scripts to help with creating releases and publishing libraries.
-version: 0.1.1
+version: 0.2.0
 homepage: https://github.com/asartalo/release_tools
 
 environment:
@@ -9,7 +9,7 @@ environment:
 dependencies:
   ansicolor: ^2.0.1
   args: ^2.0.0
-  conventional: ^0.1.0
+  conventional: ^0.2.1
   equatable: ^2.0.0
   file: ^6.1.0
   yaml: ^3.1.0
