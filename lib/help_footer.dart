@@ -8,5 +8,5 @@ See https://pub.dev/packages/release_tools for more information.''';
 }
 
 String _printExamples(String example) {
-  return example.split('\n').map((part) => '  $part').join('\n');
+  return example.trim().split('\n').map((part) => '  $part').join('\n');
 }
