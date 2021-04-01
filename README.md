@@ -45,6 +45,12 @@ $ release_tools update_version 1.0.1
 
 ## Next Version
 
+If you leave out the version to increment from, it will attempt to obtain the version from pubspec.yaml
+
+```sh
+$ release_tools next_version
+```
+
 The following command will incremeent the commands based on the commit logs that follow the conventional commit spec.
 
 ```sh
@@ -72,3 +78,4 @@ $ release_tools next_version --from=abcde1234 1.0.1
 ```
 
 ...where `--from` should point to a commit id.
+```

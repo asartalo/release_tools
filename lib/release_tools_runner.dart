@@ -37,7 +37,12 @@ class ReleaseToolsRunner {
         git: git,
         now: now,
       ))
-      ..addCommand(NextVersionCommand(printer: printer, git: git))
+      ..addCommand(NextVersionCommand(
+        fs: fs,
+        printer: printer,
+        workingDir: workingDir,
+        git: git,
+      ))
       ..addCommand(ShouldReleaseCommand(printer: printer, git: git));
 
     await cmd.run(arguments);

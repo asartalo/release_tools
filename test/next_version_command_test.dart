@@ -33,8 +33,24 @@ void main() {
     });
 
     group('errors', () {
-      test('throws ArgumentError when no version is provided', () {
+      test(
+          'throws ArgumentError when no version is provided and no pubspec.yaml is available',
+          () {
         expect(() => runner.run(['next_version']), throwsArgumentError);
+      });
+
+      test('throws StateError when version key is not present on pubspec.yaml',
+          () async {
+        final pubspecFile = fs.directory(workingDir).childFile('pubspec.yaml');
+        await pubspecFile.writeAsString('foo: bar');
+        expect(() => runner.run(['next_version']), throwsStateError);
+      });
+
+      test('throws StateError when pubspec.yaml is not a valid yaml file',
+          () async {
+        final pubspecFile = fs.directory(workingDir).childFile('pubspec.yaml');
+        await pubspecFile.writeAsString(' 113241#');
+        expect(() => runner.run(['next_version']), throwsStateError);
       });
     });
 
@@ -84,6 +100,27 @@ void main() {
         const commitId = '43cf9b78f77a0180ad408cb87e8a774a530619ce';
         await runner.run(['next_version', '--from', commitId, originalVersion]);
         expect(git.commitsFrom, equals(commitId));
+      });
+
+      test('when no version is set, it uses version on pubspec.yaml', () async {
+        final pubspecFile = fs.directory(workingDir).childFile('pubspec.yaml');
+        await pubspecFile.writeAsString('''
+name: foo_bar
+description: A sample pubspec file._file
+version: 2.0.0
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  equatable: ^2.0.0
+
+dev_dependencies:
+  test: ^1.14.4
+''');
+        git.commitsResponse = parseCommits([feat]);
+        await runner.run(['next_version']);
+        expect(printer.prints.first, equals('2.1.0'));
       });
 
       test('it prints help text', () async {
