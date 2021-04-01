@@ -16,6 +16,7 @@ Future<void> main(List<String> arguments) async {
     printer: printer,
     workingDir: workingDir,
     fs: fs,
+    now: DateTime.now(),
   );
 
   exitCode = 0;

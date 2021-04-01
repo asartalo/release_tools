@@ -7,7 +7,7 @@ Date:   Mon Feb 8 15:26:49 2021 +0800
 ''';
 
 const docs = '''
-commit fc9d8117b1074c3c965c5c1ccf845d784c026ac7
+commit c8d93b901903e0f53a1ab401e599feec4d047f9c
 Author: Jane Doe <jane.doe@example.com>
 Date:   Mon Feb 8 15:26:49 2021 +0800
 

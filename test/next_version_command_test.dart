@@ -24,7 +24,12 @@ void main() {
       printer = StubPrinter();
       git = StubGitExec();
       runner = ReleaseToolsRunner(
-          git: git, workingDir: workingDir, printer: printer, fs: fs);
+        git: git,
+        workingDir: workingDir,
+        printer: printer,
+        fs: fs,
+        now: DateTime.now(),
+      );
     });
 
     group('errors', () {

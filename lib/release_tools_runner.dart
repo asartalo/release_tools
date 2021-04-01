@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:release_tools/changelog_command.dart';
 import 'package:release_tools/should_release_command.dart';
 import 'git_exec.dart';
 import 'next_version_command.dart';
@@ -11,12 +12,14 @@ class ReleaseToolsRunner {
   final String workingDir;
   final Printer printer;
   final FileSystem fs;
+  final DateTime now;
 
   ReleaseToolsRunner({
     required this.git,
     required this.workingDir,
     required this.printer,
     required this.fs,
+    required this.now,
   });
 
   Future<void> run(List<String> arguments) async {
@@ -26,6 +29,13 @@ class ReleaseToolsRunner {
         fs: fs,
         printer: printer,
         workingDir: workingDir,
+      ))
+      ..addCommand(ChangelogCommand(
+        fs: fs,
+        printer: printer,
+        workingDir: workingDir,
+        git: git,
+        now: now,
       ))
       ..addCommand(NextVersionCommand(printer: printer, git: git))
       ..addCommand(ShouldReleaseCommand(printer: printer, git: git));

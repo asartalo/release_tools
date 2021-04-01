@@ -1,24 +1,33 @@
 import 'package:conventional/conventional.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:release_tools/changelog_command.dart';
 import 'package:release_tools/git_exec.dart';
 import 'package:release_tools/printer.dart';
 import 'package:release_tools/release_tools_runner.dart';
-import 'package:release_tools/should_release_command.dart';
 import 'package:test/test.dart';
 
 import 'fixtures.dart';
 
 void main() {
-  group(ShouldReleaseCommand, () {
+  group(ChangelogCommand, () {
     late ReleaseToolsRunner runner;
     late FileSystem fs;
     late String workingDir;
     late StubPrinter printer;
     late StubGitExec git;
-    const String command = 'should_release';
+    final now = DateTime.parse('2021-02-10');
+    const command = 'changelog';
+    const newVersion = '2.0.0';
+    const originalChangelogContent = '''
+# 1.0.0 (2021-02-09)
 
-    setUp(() {
+## Features
+
+- eat healthy ([#3](issues/3)) ([cf60800](commit/cf60800))
+''';
+
+    setUp(() async {
       fs = MemoryFileSystem();
       workingDir = fs.systemTempDirectory.path;
       printer = StubPrinter();
@@ -28,35 +37,79 @@ void main() {
         workingDir: workingDir,
         printer: printer,
         fs: fs,
-        now: DateTime.now(),
+        now: now,
       );
+
+      // prepare changelog
+      final file = fs.directory(workingDir).childFile('CHANGELOG.md');
+      await file.writeAsString(originalChangelogContent);
+    });
+
+    Future<String> getChangelogFileContents() async {
+      final file = fs.file(fs.directory(workingDir).childFile('CHANGELOG.md'));
+      return file.readAsString();
+    }
+
+    group('errors', () {
+      test('throws ArgumentError when no version is provided', () {
+        expect(() => runner.run([command]), throwsArgumentError);
+      });
     });
 
     group('happy paths', () {
       final testData = {
         'when there are no commits': _T(
           commits: [],
-          result: 'no',
+          result: originalChangelogContent,
           description: 'no version change',
         ),
         'when there are just chores': _T(
           commits: [chore],
-          result: 'no',
+          result: originalChangelogContent,
           description: 'no version change',
         ),
         'when there is a bug fix': _T(
           commits: [chore, fix],
-          result: 'yes',
+          result: '''
+# 2.0.0 (2021-02-10)
+
+## Bug Fixes
+
+- plug holes ([cf60800](commit/cf60800))
+
+$originalChangelogContent''',
           description: 'updates version to patch',
         ),
         'when there is a new feature fix': _T(
-          commits: [feat, chore, fix],
-          result: 'yes',
+          commits: [feat, chore],
+          result: '''
+# 2.0.0 (2021-02-10)
+
+## Features
+
+- it jumps ([925fcd3](commit/925fcd3))
+
+$originalChangelogContent''',
           description: 'updates minor version',
         ),
         'when there is a breaking change': _T(
           commits: [feat, chore, breaking, fix],
-          result: 'yes',
+          result: '''
+# 2.0.0 (2021-02-10)
+
+## Bug Fixes
+
+- plug holes ([cf60800](commit/cf60800))
+
+## Features
+
+- it jumps ([925fcd3](commit/925fcd3))
+
+## BREAKING CHANGES
+
+- null-safety ([43cf9b7](commit/43cf9b7))
+
+$originalChangelogContent''',
           description: 'updates major version',
         ),
       };
@@ -68,16 +121,34 @@ void main() {
           });
 
           test(data.description, () async {
-            await runner.run([command]);
-            expect(printer.prints.first, equals(data.result));
+            await runner.run([command, newVersion]);
+            expect(await getChangelogFileContents(), equals(data.result));
           });
         });
       });
 
       test('when a commit id is passed, it passes it to git', () async {
-        const commitId = '43cf9b78f77a0180ad408cb87e8a774a530619ce';
-        await runner.run([command, '--from', commitId]);
+        const commitId = '43cf9b7';
+        await runner.run([command, '--from', commitId, newVersion]);
         expect(git.commitsFrom, equals(commitId));
+      });
+
+      test('prints change summary when successful', () async {
+        git.commitsResponse = parseCommits([fix]);
+        await runner.run([command, newVersion]);
+        expect(printer.prints.last, equals('''
+# 2.0.0 (2021-02-10)
+
+## Bug Fixes
+
+- plug holes ([cf60800](commit/cf60800))
+'''));
+      });
+
+      test('prints nothing when there are no releasable commits', () async {
+        git.commitsResponse = parseCommits([docs, chore]);
+        await runner.run([command, newVersion]);
+        expect(printer.prints.isEmpty, true);
       });
 
       test('it prints help text', () async {
@@ -85,7 +156,7 @@ void main() {
         final helpText = printer.prints.join('\n');
         expect(
           helpText,
-          contains('Checks if a release is possible based on commits'),
+          contains('Updates changelog based on conventional commits.'),
         );
         expect(helpText, contains('Usage:'));
       });
