@@ -1,13 +1,29 @@
+import 'dart:io';
+import 'package:file/local.dart';
+import 'package:release_tools/exec.dart';
+import 'package:release_tools/git_exec.dart';
+import 'package:release_tools/printer.dart';
 import 'package:release_tools/release_tools_runner.dart';
-import 'package:release_tools/runner_runner.dart';
 
 Future<void> main(List<String> arguments) async {
-  final rr = RunnerRunner();
+  final printer = TruePrinter(stdout: stdout, stderr: stderr);
+  const fs = LocalFileSystem();
+  final String workingDir = fs.path.canonicalize(fs.currentDirectory.path);
+  final git = GitExec(Exec(workingDir: workingDir));
+
   final runner = ReleaseToolsRunner(
-    git: rr.git,
-    printer: rr.printer,
-    workingDir: rr.workingDir,
-    fs: rr.fs,
+    git: git,
+    printer: printer,
+    workingDir: workingDir,
+    fs: fs,
   );
-  await rr.run(runner, arguments);
+
+  exitCode = 0;
+  try {
+    await runner.run(arguments);
+  } catch (e) {
+    exitCode = 1;
+    printer.printErr(e.toString());
+    return;
+  }
 }
