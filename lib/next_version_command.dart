@@ -7,7 +7,7 @@ import 'help_footer.dart';
 import 'printer.dart';
 import 'release_tools_command.dart';
 
-class NextVersionCommand extends ReleaseToolsCommand {
+class NextVersionCommand extends ReleaseToolsCommand with GitCommand {
   final GitExec git;
 
   @override
@@ -36,11 +36,7 @@ release_tools next_version --from=3682c64 2.0.1
     required this.git,
     required this.printer,
   }) {
-    argParser.addOption(
-      'from',
-      abbr: 'f',
-      help: 'Set the commitId to start collecting commits from',
-    );
+    gitFromOption();
   }
 
   @override
@@ -51,9 +47,8 @@ release_tools next_version --from=3682c64 2.0.1
         throw ArgumentError('Please provide a version to increment from.');
       }
       final currentVersion = args.rest.first;
-      final from = args['from'] is String ? args['from'] as String : null;
-      final commits = await git.commits(from: from);
-      final newVersion = nextVersion(Version.parse(currentVersion), commits);
+      final newVersion =
+          nextVersion(Version.parse(currentVersion), await getCommits());
       printer.println(newVersion.toString());
     }
   }

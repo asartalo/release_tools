@@ -6,7 +6,7 @@ import 'git_exec.dart';
 import 'help_footer.dart';
 import 'printer.dart';
 
-class ShouldReleaseCommand extends ReleaseToolsCommand {
+class ShouldReleaseCommand extends ReleaseToolsCommand with GitCommand {
   final GitExec git;
 
   @override
@@ -34,20 +34,12 @@ release_tools should_release --from=1571c70
     required this.git,
     required this.printer,
   }) {
-    argParser.addOption(
-      'from',
-      abbr: 'f',
-      help: 'Set the commitId to start collecting commits from',
-    );
+    gitFromOption();
   }
 
   @override
   Future<void> run() async {
-    if (argResults is ArgResults) {
-      final args = argResults!;
-      final from = args['from'] is String ? args['from'] as String : null;
-      final commits = await git.commits(from: from);
-      printer.println(hasReleasableCommits(commits) ? 'yes' : 'no');
-    }
+    final commits = await getCommits();
+    printer.println(hasReleasableCommits(commits) ? 'yes' : 'no');
   }
 }
