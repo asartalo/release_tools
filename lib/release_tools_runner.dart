@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:release_tools/should_release_command.dart';
 import 'git_exec.dart';
 import 'next_version_command.dart';
 import 'printer.dart';
@@ -26,7 +27,8 @@ class ReleaseToolsRunner {
         printer: printer,
         workingDir: workingDir,
       ))
-      ..addCommand(NextVersionCommand(printer: printer, git: git));
+      ..addCommand(NextVersionCommand(printer: printer, git: git))
+      ..addCommand(ShouldReleaseCommand(printer: printer, git: git));
 
     await cmd.run(arguments);
   }
