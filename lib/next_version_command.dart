@@ -28,8 +28,8 @@ class NextVersionCommand extends ReleaseToolsCommand {
 
   @override
   final usageFooter = helpFooter('''
-release_tools:next_version 2.0.1
-release_tools:next_version --from=1571c703742a16bfb34c3e68c5d75b8e1eda339b 2.0.1
+release_tools next_version 2.0.1
+release_tools next_version --from=3682c64 2.0.1
 ''');
 
   NextVersionCommand({
