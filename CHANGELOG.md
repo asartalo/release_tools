@@ -1,3 +1,10 @@
+# 0.2.1 (2021-04-01)
+
+## Features
+
+- changelog command ([1c5828c](commit/1c5828c))
+- should_release command ([a7a1907](commit/a7a1907))
+
 # 0.2.0 (2021-03-31)
 
 ## BREAKING CHANGES
