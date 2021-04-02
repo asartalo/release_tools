@@ -1,3 +1,10 @@
+# 0.2.2 (2021-04-02)
+
+## Features
+
+- update_year command ([7ec4ebe](commit/7ec4ebe))
+- next_version uses pubspec.yaml by default ([f5e9ba7](commit/f5e9ba7))
+
 # 0.2.1 (2021-04-01)
 
 ## Features
