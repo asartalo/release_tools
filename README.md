@@ -35,15 +35,15 @@ I recommend installing `release_tools` globally so that it won't interfere with 
 $ pub global activate release_tools
 ```
 
-## Update Version
+## update_version
 
-The following command will update the version on `pubspec.yaml` to verion 1.0.1
+The following command will update the version on `pubspec.yaml` to version 1.0.1
 
 ```sh
 $ release_tools update_version 1.0.1
 ```
 
-## Next Version
+## next_version
 
 If you leave out the version to increment from, it will attempt to obtain the version from pubspec.yaml
 
@@ -78,4 +78,44 @@ $ release_tools next_version --from=abcde1234 1.0.1
 ```
 
 ...where `--from` should point to a commit id.
+
+## should_release
+
+The following will print 'yes' to stdout if there are releasable commits, or 'no' if there are none.
+
+```sh
+$ release_tools should_release
+yes
+$ release_tools should_release --from=abcde1234
+no
+```
+
+## changelog
+
+The following will update changelog based on the commit logs that follow the Conventional Commit spec.
+
+```sh
+$ release_tools changelog 2.0.1
+$ release_tools changelog --from=3682c64 2.0.1
+```
+
+A sample changelog would be the following:
+
+```markdown
+# 1.0.0 (2021-02-09)
+
+## Bug Fixes
+
+- eat healthy ([#3](issues/3)) ([cf60800](commit/cf60800))
+
+## Features
+
+- **movement:** it jumps ([#1](issues/1)) ([925fcd3](commit/925fcd3))
+- **movement:** it pounces ([#2](issues/2)) ([a25fcd3](commit/a25fcd3))
+- **communication:** it talks ([#4](issues/4)) ([a25fcd3](commit/a25fcd3))
+- **communication:** it sends sms ([#5](issues/5)) ([b25fcd3](commit/b25fcd3))
+
+## BREAKING CHANGES
+
+- null-safety ([#6](issues/6)) ([43cf9b7](commit/43cf9b7))
 ```
