@@ -36,11 +36,6 @@ class UpdateVersionCommand extends ReleaseToolsCommand {
 
   @override
   Future<void> run() async {
-    // final help = argResults['help'];
-    // if (help is bool && help) {
-    //   showHelpText();
-    //   return;
-    // }
     if (argResults is ArgResults) {
       final pubspecFile = await _getPubspecFile();
       final newVersion = _getNewVersion(argResults!.rest);

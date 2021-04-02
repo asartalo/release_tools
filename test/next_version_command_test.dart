@@ -12,12 +12,14 @@ import 'runner_setup.dart';
 void main() {
   group(NextVersionCommand, () {
     runnerSetup((getContext) {
-      const originalVersion = '1.0.0';
       late ReleaseToolsRunner runner;
       late MemoryFileSystem fs;
       late String workingDir;
       late StubGitExec git;
       late StubPrinter printer;
+
+      const originalVersion = '1.0.0';
+      const command = 'next_version';
 
       setUp(() {
         final context = getContext();
@@ -32,7 +34,7 @@ void main() {
         test(
             'throws ArgumentError when no version is provided and no pubspec.yaml is available',
             () {
-          expect(() => runner.run(['next_version']), throwsArgumentError);
+          expect(() => runner.run([command]), throwsArgumentError);
         });
 
         test(
@@ -41,7 +43,7 @@ void main() {
           final pubspecFile =
               fs.directory(workingDir).childFile('pubspec.yaml');
           await pubspecFile.writeAsString('foo: bar');
-          expect(() => runner.run(['next_version']), throwsStateError);
+          expect(() => runner.run([command]), throwsStateError);
         });
 
         test('throws StateError when pubspec.yaml is not a valid yaml file',
@@ -49,7 +51,7 @@ void main() {
           final pubspecFile =
               fs.directory(workingDir).childFile('pubspec.yaml');
           await pubspecFile.writeAsString(' 113241#');
-          expect(() => runner.run(['next_version']), throwsStateError);
+          expect(() => runner.run([command]), throwsStateError);
         });
       });
 
@@ -89,7 +91,7 @@ void main() {
             });
 
             test(data.description, () async {
-              await runner.run(['next_version', originalVersion]);
+              await runner.run([command, originalVersion]);
               expect(printer.prints.first, equals(data.result));
             });
           });
@@ -97,8 +99,7 @@ void main() {
 
         test('when a commit id is passed, it passes it to git', () async {
           const commitId = '43cf9b78f77a0180ad408cb87e8a774a530619ce';
-          await runner
-              .run(['next_version', '--from', commitId, originalVersion]);
+          await runner.run([command, '--from', commitId, originalVersion]);
           expect(git.commitsFrom, equals(commitId));
         });
 
@@ -121,12 +122,12 @@ dev_dependencies:
   test: ^1.14.4
 ''');
           git.commitsResponse = parseCommits([feat]);
-          await runner.run(['next_version']);
+          await runner.run([command]);
           expect(printer.prints.first, equals('2.1.0'));
         });
 
         test('it prints help text', () async {
-          await runner.run(['next_version', '--help']);
+          await runner.run([command, '--help']);
           final helpText = printer.prints.join('\n');
           expect(
             helpText,
