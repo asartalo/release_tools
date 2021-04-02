@@ -7,15 +7,10 @@ A collection of scripts to help with creating releases for publishing libraries 
 
 ## Features
 
-**Available**
-
 - `release_tools update_version` - Update the version number of pubspec.yaml
 - `release_tools next_version` - Get the next version based on commits.
 - `release_tools should_release` - Check if we can create a release based on commits that follow the [Conventional Commit](https://www.conventionalcommits.org/) spec.
 - `release_tools changelog` - Update changelog based on commits that follow the Conventional Commit spec.
-
-**Planned:**
-
 - `release_tools update_year` - For syncing years on license files
 
 ## Notes Before Installing
@@ -118,4 +113,13 @@ A sample changelog would be the following:
 ## BREAKING CHANGES
 
 - null-safety ([#6](issues/6)) ([43cf9b7](commit/43cf9b7))
+```
+
+## update_year
+
+A simple tool for updating the year on LICENSE files. Note that the logic is really simple. It simply updates the first 4-digit number to the current year which may or may not be enough for your needs.
+
+```sh
+$ release_tools update_year
+$ release_tools update_year --license=MY_LICENSE_FILE
 ```

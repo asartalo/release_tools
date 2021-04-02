@@ -2,6 +2,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:release_tools/changelog_command.dart';
 import 'package:release_tools/should_release_command.dart';
+import 'package:release_tools/update_year_command.dart';
 import 'git_exec.dart';
 import 'next_version_command.dart';
 import 'printer.dart';
@@ -42,6 +43,12 @@ class ReleaseToolsRunner {
         printer: printer,
         workingDir: workingDir,
         git: git,
+      ))
+      ..addCommand(UpdateYearCommand(
+        fs: fs,
+        printer: printer,
+        workingDir: workingDir,
+        now: now,
       ))
       ..addCommand(ShouldReleaseCommand(printer: printer, git: git));
 
