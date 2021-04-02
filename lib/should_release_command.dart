@@ -1,4 +1,3 @@
-import 'package:args/args.dart';
 import 'package:conventional/conventional.dart';
 import 'package:release_tools/release_tools_command.dart';
 
@@ -7,6 +6,7 @@ import 'help_footer.dart';
 import 'printer.dart';
 
 class ShouldReleaseCommand extends ReleaseToolsCommand with GitCommand {
+  @override
   final GitExec git;
 
   @override

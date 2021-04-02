@@ -1,5 +1,4 @@
 import 'package:conventional/conventional.dart';
-import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:release_tools/git_exec.dart';
 import 'package:release_tools/next_version_command.dart';
@@ -8,103 +7,106 @@ import 'package:release_tools/release_tools_runner.dart';
 import 'package:test/test.dart';
 
 import 'fixtures.dart';
+import 'runner_setup.dart';
 
 void main() {
   group(NextVersionCommand, () {
-    late ReleaseToolsRunner runner;
-    late FileSystem fs;
-    late String workingDir;
-    late StubPrinter printer;
-    late StubGitExec git;
-    const originalVersion = '1.0.0';
+    runnerSetup((getContext) {
+      const originalVersion = '1.0.0';
+      late ReleaseToolsRunner runner;
+      late MemoryFileSystem fs;
+      late String workingDir;
+      late StubGitExec git;
+      late StubPrinter printer;
 
-    setUp(() {
-      fs = MemoryFileSystem();
-      workingDir = fs.systemTempDirectory.path;
-      printer = StubPrinter();
-      git = StubGitExec();
-      runner = ReleaseToolsRunner(
-        git: git,
-        workingDir: workingDir,
-        printer: printer,
-        fs: fs,
-        now: DateTime.now(),
-      );
-    });
-
-    group('errors', () {
-      test(
-          'throws ArgumentError when no version is provided and no pubspec.yaml is available',
-          () {
-        expect(() => runner.run(['next_version']), throwsArgumentError);
+      setUp(() {
+        final context = getContext();
+        runner = context.runner;
+        fs = context.fs;
+        git = context.git;
+        workingDir = context.workingDir;
+        printer = context.printer;
       });
 
-      test('throws StateError when version key is not present on pubspec.yaml',
-          () async {
-        final pubspecFile = fs.directory(workingDir).childFile('pubspec.yaml');
-        await pubspecFile.writeAsString('foo: bar');
-        expect(() => runner.run(['next_version']), throwsStateError);
-      });
+      group('errors', () {
+        test(
+            'throws ArgumentError when no version is provided and no pubspec.yaml is available',
+            () {
+          expect(() => runner.run(['next_version']), throwsArgumentError);
+        });
 
-      test('throws StateError when pubspec.yaml is not a valid yaml file',
-          () async {
-        final pubspecFile = fs.directory(workingDir).childFile('pubspec.yaml');
-        await pubspecFile.writeAsString(' 113241#');
-        expect(() => runner.run(['next_version']), throwsStateError);
-      });
-    });
+        test(
+            'throws StateError when version key is not present on pubspec.yaml',
+            () async {
+          final pubspecFile =
+              fs.directory(workingDir).childFile('pubspec.yaml');
+          await pubspecFile.writeAsString('foo: bar');
+          expect(() => runner.run(['next_version']), throwsStateError);
+        });
 
-    group('happy paths', () {
-      final testData = {
-        'when there are no commits': _T(
-          commits: [],
-          result: originalVersion,
-          description: 'no version change',
-        ),
-        'when there are just chores': _T(
-          commits: [chore],
-          result: originalVersion,
-          description: 'no version change',
-        ),
-        'when there is a bug fix': _T(
-          commits: [chore, fix],
-          result: '1.0.1',
-          description: 'updates version to patch',
-        ),
-        'when there is a new feature fix': _T(
-          commits: [feat, chore, fix],
-          result: '1.1.0',
-          description: 'updates minor version',
-        ),
-        'when there is a breaking change': _T(
-          commits: [feat, chore, breaking, fix],
-          result: '2.0.0',
-          description: 'updates major version',
-        ),
-      };
-
-      testData.forEach((testDescription, data) {
-        group(testDescription, () {
-          setUp(() {
-            git.commitsResponse = parseCommits(data.commits);
-          });
-
-          test(data.description, () async {
-            await runner.run(['next_version', originalVersion]);
-            expect(printer.prints.first, equals(data.result));
-          });
+        test('throws StateError when pubspec.yaml is not a valid yaml file',
+            () async {
+          final pubspecFile =
+              fs.directory(workingDir).childFile('pubspec.yaml');
+          await pubspecFile.writeAsString(' 113241#');
+          expect(() => runner.run(['next_version']), throwsStateError);
         });
       });
 
-      test('when a commit id is passed, it passes it to git', () async {
-        const commitId = '43cf9b78f77a0180ad408cb87e8a774a530619ce';
-        await runner.run(['next_version', '--from', commitId, originalVersion]);
-        expect(git.commitsFrom, equals(commitId));
-      });
+      group('happy paths', () {
+        final testData = {
+          'when there are no commits': _T(
+            commits: [],
+            result: originalVersion,
+            description: 'no version change',
+          ),
+          'when there are just chores': _T(
+            commits: [chore],
+            result: originalVersion,
+            description: 'no version change',
+          ),
+          'when there is a bug fix': _T(
+            commits: [chore, fix],
+            result: '1.0.1',
+            description: 'updates version to patch',
+          ),
+          'when there is a new feature fix': _T(
+            commits: [feat, chore, fix],
+            result: '1.1.0',
+            description: 'updates minor version',
+          ),
+          'when there is a breaking change': _T(
+            commits: [feat, chore, breaking, fix],
+            result: '2.0.0',
+            description: 'updates major version',
+          ),
+        };
 
-      test('when no version is set, it uses version on pubspec.yaml', () async {
-        final pubspecFile = fs.directory(workingDir).childFile('pubspec.yaml');
-        await pubspecFile.writeAsString('''
+        testData.forEach((testDescription, data) {
+          group(testDescription, () {
+            setUp(() {
+              git.commitsResponse = parseCommits(data.commits);
+            });
+
+            test(data.description, () async {
+              await runner.run(['next_version', originalVersion]);
+              expect(printer.prints.first, equals(data.result));
+            });
+          });
+        });
+
+        test('when a commit id is passed, it passes it to git', () async {
+          const commitId = '43cf9b78f77a0180ad408cb87e8a774a530619ce';
+          await runner
+              .run(['next_version', '--from', commitId, originalVersion]);
+          expect(git.commitsFrom, equals(commitId));
+        });
+
+        test('when no version is set, it uses version on pubspec.yaml',
+            () async {
+          final pubspecFile =
+              fs.directory(workingDir).childFile('pubspec.yaml');
+          await pubspecFile.writeAsString('''
 name: foo_bar
 description: A sample pubspec file._file
 version: 2.0.0
@@ -118,20 +120,21 @@ dependencies:
 dev_dependencies:
   test: ^1.14.4
 ''');
-        git.commitsResponse = parseCommits([feat]);
-        await runner.run(['next_version']);
-        expect(printer.prints.first, equals('2.1.0'));
-      });
+          git.commitsResponse = parseCommits([feat]);
+          await runner.run(['next_version']);
+          expect(printer.prints.first, equals('2.1.0'));
+        });
 
-      test('it prints help text', () async {
-        await runner.run(['next_version', '--help']);
-        final helpText = printer.prints.join('\n');
-        expect(
-          helpText,
-          contains(
-              'Gets the next version number based on conventional commits.'),
-        );
-        expect(helpText, contains('Usage:'));
+        test('it prints help text', () async {
+          await runner.run(['next_version', '--help']);
+          final helpText = printer.prints.join('\n');
+          expect(
+            helpText,
+            contains(
+                'Gets the next version number based on conventional commits.'),
+          );
+          expect(helpText, contains('Usage:'));
+        });
       });
     });
   });

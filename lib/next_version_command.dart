@@ -10,9 +10,11 @@ import 'printer.dart';
 import 'release_tools_command.dart';
 
 class NextVersionCommand extends ReleaseToolsCommand with GitCommand {
-  final GitExec git;
   final FileSystem fs;
   final String workingDir;
+
+  @override
+  final GitExec git;
 
   @override
   final Printer printer;

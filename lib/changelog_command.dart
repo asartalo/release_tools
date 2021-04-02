@@ -10,8 +10,10 @@ import 'release_tools_command.dart';
 class ChangelogCommand extends ReleaseToolsCommand with GitCommand {
   final FileSystem fs;
   final String workingDir;
-  final GitExec git;
   final DateTime now;
+
+  @override
+  final GitExec git;
 
   @override
   final Printer printer;
