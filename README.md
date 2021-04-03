@@ -13,6 +13,7 @@ A collection of scripts to help with creating releases for publishing libraries 
 - `release_tools changelog` - Update changelog based on commits that follow the Conventional Commit spec.
 - `release_tools update_year` - For syncing years on license files
 - `release_tools remote_tag_id` - Get the commit id of a remote tag
+- `release_tools current_version` - Get the current version of this package
 
 ## Notes Before Installing
 
@@ -144,4 +145,13 @@ You can specify the remote repository instead of the default 'origin' if needed:
 
 ```sh
 $ release_tools remote_tag_id --remote=source 0.2.2
+```
+
+## current_version
+
+Use this if you need to retrieve the current version on pubspec.yaml
+
+```sh
+$ release_tools current_version
+# 1.0.2
 ```

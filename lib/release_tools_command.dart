@@ -27,16 +27,24 @@ mixin VersionCommand on ReleaseToolsCommand {
 
   Future<String> getVersionFromArgsOrPubspec() async {
     final args = ensureArgResults();
-    return args.rest.isNotEmpty
-        ? args.rest.first
-        : await getVersionFromPubspec();
+    try {
+      return args.rest.isNotEmpty
+          ? args.rest.first
+          : await getVersionFromPubspec();
+
+      // ignore: avoid_catching_errors
+    } on NoPubspecFileFound {
+      throw ArgumentError(
+        'No pubspec.yaml found. Please provide a version to increment from.',
+      );
+    }
   }
 
   Future<String> getVersionFromPubspec() async {
     final file = fs.directory(workingDir).childFile('pubspec.yaml');
     if (!await file.exists()) {
-      throw ArgumentError(
-        'No pubspec.yaml found. Please provide a version to increment from.',
+      throw NoPubspecFileFound(
+        'No pubspec.yaml found.',
       );
     }
     final contents = await file.readAsString();
@@ -52,6 +60,10 @@ mixin VersionCommand on ReleaseToolsCommand {
     }
     return version;
   }
+}
+
+class NoPubspecFileFound extends StateError {
+  NoPubspecFileFound(String message) : super(message);
 }
 
 mixin GitCommand on ReleaseToolsCommand {
