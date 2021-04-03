@@ -15,7 +15,7 @@ A collection of scripts to help with creating releases for publishing libraries 
 - `release_tools remote_tag_id` - Get the commit id of a remote tag
 - `release_tools current_version` - Get the current version of this package
 
-## Notes Before Installing
+## Notes Before Using
 
 To be effective, `release_tools` makes a few assumptions about a project:
 
