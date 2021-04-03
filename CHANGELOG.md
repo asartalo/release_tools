@@ -1,3 +1,9 @@
+# 0.2.4 (2021-04-03)
+
+## Bug Fixes
+
+- display exec errors ([7c7dd30](commit/7c7dd30))
+
 # 0.2.3 (2021-04-03)
 
 ## Features
