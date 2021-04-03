@@ -1,3 +1,10 @@
+# 0.2.3 (2021-04-03)
+
+## Features
+
+- curent_version command ([ce26035](commit/ce26035))
+- remote_tag_id command ([090a5fd](commit/090a5fd))
+
 # 0.2.2 (2021-04-02)
 
 ## Features
