@@ -22,6 +22,7 @@ class _Exec implements Exec {
       final exitCode = result.exitCode;
       if (exitCode != 0) {
         output = result.stdout.toString();
+        output = result.stderr.toString();
         output += 'Command executed code: $exitCode';
         success = false;
       } else {

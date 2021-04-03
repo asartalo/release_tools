@@ -24,7 +24,13 @@ Future<void> main(List<String> arguments) async {
     await runner.run(arguments);
   } catch (e) {
     exitCode = 1;
-    printer.printErr(e.toString());
+    try {
+      final message = (e as dynamic).message as String;
+      printer.printErr(message);
+      // ignore: avoid_catching_errors
+    } on NoSuchMethodError {
+      printer.printErr(e.toString());
+    }
     return;
   }
 }
