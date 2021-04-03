@@ -110,13 +110,13 @@ jobs:
     - name: Update version
       if: steps.shouldRelease.outputs.value == 'yes'
       id: updateVersion
-      run: pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}"
+      run: pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}
 
     - name: Write changelog
       id: changelog
       if: steps.shouldRelease.outputs.value == 'yes'
       run: |
-        output=$(pub run release_tools changelog --from ${{ steps.lastCommitId.outputs.value }} ${{ steps.nextVersion.outputs.value }})"
+        output=$(pub run release_tools changelog --from ${{ steps.lastCommitId.outputs.value }} ${{ steps.nextVersion.outputs.value }})
         echo "::set-output name=summary::$output"
 
     - name: Commit Release
