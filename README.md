@@ -4,7 +4,7 @@ A collection of scripts to help with creating releases for publishing libraries 
 
 
 [![build](https://github.com/asartalo/release_tools/actions/workflows/ci.yml/badge.svg)](https://github.com/asartalo/conventional/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/asartalo/release_tools/badge.svg?branch=main)](https://coveralls.io/github/asartalo/release_tools?branch=main)
-
+ [![Pub](https://img.shields.io/pub/v/release_tools.svg)](https://pub.dev/packages/release_tools)
 ## Features
 
 - `release_tools update_version` - Update the version number of pubspec.yaml
