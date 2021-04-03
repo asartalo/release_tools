@@ -1,6 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:release_tools/changelog_command.dart';
+import 'package:release_tools/remote_tag_id_command.dart';
 import 'package:release_tools/should_release_command.dart';
 import 'package:release_tools/update_year_command.dart';
 import 'git_exec.dart';
@@ -49,6 +50,10 @@ class ReleaseToolsRunner {
         printer: printer,
         workingDir: workingDir,
         now: now,
+      ))
+      ..addCommand(RemoteTagIdCommand(
+        printer: printer,
+        git: git,
       ))
       ..addCommand(ShouldReleaseCommand(printer: printer, git: git));
 

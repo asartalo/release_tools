@@ -13,6 +13,7 @@ abstract class GitExec {
   Future<List<Commit>> commits({String? from});
   Future<String> hashForTag(String tag);
   Future<String> firstHash();
+  Future<String> lsRemoteTag({String tag = '', String remote = 'origin'});
 }
 
 class _GitExec implements GitExec {
@@ -56,11 +57,26 @@ class _GitExec implements GitExec {
     }
     return result.output;
   }
+
+  @override
+  Future<String> lsRemoteTag(
+      {String tag = '', String remote = 'origin'}) async {
+    final args = ['ls-remote', '-q', '--tags', remote];
+    if (tag.isNotEmpty) {
+      args.add(tag);
+    }
+    return _throwOnFail(await _execute(
+      'git',
+      args,
+    ));
+  }
 }
 
 class StubGitExec implements GitExec {
   List<Commit> commitsResponse = [];
   String? commitsFrom;
+  String lsRemoteTagResponse = '';
+  Map<String, String> lsRemoteTagArgs = {};
 
   @override
   Future<List<Commit>> commits({String? from}) async {
@@ -78,5 +94,15 @@ class StubGitExec implements GitExec {
   Future<String> hashForTag(String tag) {
     // TODO: implement getHashForTag
     throw UnimplementedError();
+  }
+
+  @override
+  Future<String> lsRemoteTag(
+      {String tag = '', String remote = 'origin'}) async {
+    lsRemoteTagArgs = {
+      'tag': tag,
+      'remote': remote,
+    };
+    return lsRemoteTagResponse;
   }
 }

@@ -101,5 +101,60 @@ void main() {
         expect(result, equals(commitId));
       });
     });
+
+    group('lsRemoteTag()', () {
+      late String result;
+      late String successOutput;
+
+      String getLasatExecArgs() {
+        final args = exec.executeArgs.last;
+        return '${args.first} ${args[1].join(' ')}';
+      }
+
+      group('calling', () {
+        setUp(() async {
+          successOutput = '''
+5af48ff5f784176b90fdf6884e925bfd20cb4936	refs/tags/0.2.1
+3ed81541a61c7502b658c027f6d5ec87c129c1a9	refs/tags/0.2.2''';
+          exec.executioner = (cmd, args) => Execution(
+                success: true,
+                output: successOutput,
+              );
+        });
+
+        test('with no tag and no remote', () async {
+          result = await git.lsRemoteTag();
+          expect(getLasatExecArgs(), equals('git ls-remote -q --tags origin'));
+        });
+
+        test('with no tag but with remote', () async {
+          result = await git.lsRemoteTag(remote: 'foo');
+          expect(getLasatExecArgs(), equals('git ls-remote -q --tags foo'));
+        });
+
+        test('with a tag but with no remote', () async {
+          result = await git.lsRemoteTag(tag: '2.0.0');
+          expect(getLasatExecArgs(),
+              equals('git ls-remote -q --tags origin 2.0.0'));
+        });
+      });
+
+      group('returns', () {
+        setUp(() async {
+          successOutput = '''
+5af48ff5f784176b90fdf6884e925bfd20cb4936	refs/tags/0.2.1
+3ed81541a61c7502b658c027f6d5ec87c129c1a9	refs/tags/0.2.2''';
+          exec.executioner = (cmd, args) => Execution(
+                success: true,
+                output: successOutput,
+              );
+          result = await git.lsRemoteTag();
+        });
+
+        test('returns the result output', () {
+          expect(result, equals(successOutput));
+        });
+      });
+    });
   });
 }

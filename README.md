@@ -12,6 +12,7 @@ A collection of scripts to help with creating releases for publishing libraries 
 - `release_tools should_release` - Check if we can create a release based on commits that follow the [Conventional Commit](https://www.conventionalcommits.org/) spec.
 - `release_tools changelog` - Update changelog based on commits that follow the Conventional Commit spec.
 - `release_tools update_year` - For syncing years on license files
+- `release_tools remote_tag_id` - Get the commit id of a remote tag
 
 ## Notes Before Installing
 
@@ -122,4 +123,25 @@ A simple tool for updating the year on LICENSE files. Note that the logic is rea
 ```sh
 $ release_tools update_year
 $ release_tools update_year --license=MY_LICENSE_FILE
+```
+
+## remote_tag_id
+
+Use this to retrieve the commit id of a tag on the git repository's remote.
+
+```sh
+$ release_tools remote_tag_id 0.2.2
+# 3ed81541a61c7502b658c027f6d5ec87c129c1a9
+```
+
+Underneath, it simply runs the following git command:
+
+```sh
+git ls-remote -q --tags origin 0.2.2
+```
+
+You can specify the remote repository instead of the default 'origin' if needed:
+
+```sh
+$ release_tools remote_tag_id --remote=source 0.2.2
 ```
