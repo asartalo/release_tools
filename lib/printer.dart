@@ -4,13 +4,13 @@ import 'package:ansicolor/ansicolor.dart';
 
 abstract class Printer {
   /// Prints a regular string
-  external void println(String str);
+  void println(String str);
 
   /// Prints a string signifying success.
-  external void printSuccess(String str);
+  void printSuccess(String str);
 
   /// Prints an error string
-  external void printErr(String str);
+  void printErr(String str);
 }
 
 final red = AnsiPen()..red();

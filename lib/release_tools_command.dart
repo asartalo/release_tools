@@ -22,8 +22,8 @@ abstract class ReleaseToolsCommand extends Command {
 }
 
 mixin VersionCommand on ReleaseToolsCommand {
-  external FileSystem get fs;
-  external String get workingDir;
+  FileSystem get fs;
+  String get workingDir;
 
   Future<String> getVersionFromArgsOrPubspec() async {
     final args = ensureArgResults();
@@ -67,7 +67,7 @@ class NoPubspecFileFound extends StateError {
 }
 
 mixin GitCommand on ReleaseToolsCommand {
-  external GitExec get git;
+  GitExec get git;
 
   void gitFromOption() {
     argParser.addOption(
