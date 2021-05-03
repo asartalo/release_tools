@@ -23,6 +23,7 @@ typedef GetContext = RunnerTestContext Function({DateTime? now});
 
 typedef SetupCallback = void Function(GetContext);
 
+/// Setup the test context for running tests with the command
 void runnerSetup(SetupCallback callback) {
   RunnerTestContext ctxCaller({DateTime? now}) {
     final fs = MemoryFileSystem();

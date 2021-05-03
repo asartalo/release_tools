@@ -4,11 +4,11 @@ import 'package:args/args.dart';
 
 import 'help_footer.dart';
 import 'printer.dart';
+import 'project.dart';
 import 'release_tools_command.dart';
 
 class UpdateVersionCommand extends ReleaseToolsCommand {
-  final FileSystem fs;
-  final String workingDir;
+  final Project project;
 
   @override
   final Printer printer;
@@ -29,19 +29,22 @@ class UpdateVersionCommand extends ReleaseToolsCommand {
   final usageFooter = helpFooter('release_tools update_version 2.0.1');
 
   UpdateVersionCommand({
-    required this.fs,
-    required this.workingDir,
+    required this.project,
     required this.printer,
   }) : super();
 
   @override
   Future<void> run() async {
     if (argResults is ArgResults) {
-      final pubspecFile = await _getPubspecFile();
       final newVersion = _getNewVersion(argResults!.rest);
-      await _updateVersionOnFile(pubspecFile, newVersion);
+      await updateVersionOnPubspecFile(newVersion);
       printer.printSuccess('Updated version to "$newVersion".');
     }
+  }
+
+  Future<void> updateVersionOnPubspecFile(String newVersion) async {
+    final pubspecFile = await _getPubspecFile();
+    await _updateVersionOnFile(pubspecFile, newVersion);
   }
 
   String _getNewVersion(List<String> arguments) {
@@ -53,11 +56,10 @@ class UpdateVersionCommand extends ReleaseToolsCommand {
   }
 
   Future<File> _getPubspecFile() async {
-    final pubspecFile = fs.directory(workingDir).childFile('pubspec.yaml');
-    if (!await pubspecFile.exists()) {
-      throw MissingPubspecError(workingDir);
+    if (!await project.pubspecExists()) {
+      throw MissingPubspecError(project.workingDir);
     }
-    return pubspecFile;
+    return project.pubspec();
   }
 
   Future<void> _updateVersionOnFile(File pubspecFile, String newVersion) async {

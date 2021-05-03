@@ -11,9 +11,10 @@ A collection of scripts to help with creating releases for publishing libraries 
 - `release_tools next_version` - Get the next version based on commits.
 - `release_tools should_release` - Check if we can create a release based on commits that follow the [Conventional Commit](https://www.conventionalcommits.org/) spec.
 - `release_tools changelog` - Update changelog based on commits that follow the Conventional Commit spec.
-- `release_tools update_year` - For syncing years on license files
-- `release_tools remote_tag_id` - Get the commit id of a remote tag
-- `release_tools current_version` - Get the current version of this package
+- `release_tools update_year` - For syncing years on license files.
+- `release_tools remote_tag_id` - Get the commit id of a remote tag.
+- `release_tools current_version` - Get the current version of this package.
+- `release_tools prepare_release` - Complete release prep logic using the tools previously mentioned.
 
 ## Notes Before Using
 
@@ -23,16 +24,19 @@ To be effective, `release_tools` makes a few assumptions about a project:
 - Commits follow the [Conventional Commit](https://www.conventionalcommits.org/) spec
 - Versions are tagged
 
+If your project needs are typical, you probably only need `prepare_release`. However, if you need more fine-grained control, use the other scripts as you see fit.
 
 ## Installation
 
-I recommend installing `release_tools` globally so that it won't interfere with your project's own dependecies:
+I recommend installing `release_tools` globally so that it won't interfere with your project's own dependecies. Constrain it to a specific version to limit supply-chain exploits.
 
 ```sh
-$ pub global activate release_tools
+$ pub global activate release_tools 0.2.5
 ```
 
-## update_version
+## Scripts
+
+### update_version
 
 The following command will update the version on `pubspec.yaml` to version 1.0.1
 
@@ -40,7 +44,7 @@ The following command will update the version on `pubspec.yaml` to version 1.0.1
 $ release_tools update_version 1.0.1
 ```
 
-## next_version
+### next_version
 
 If you leave out the version to increment from, it will attempt to obtain the version from pubspec.yaml
 
@@ -76,7 +80,7 @@ $ release_tools next_version --from=abcde1234 1.0.1
 
 ...where `--from` should point to a commit id.
 
-## should_release
+### should_release
 
 The following will print 'yes' to stdout if there are releasable commits, or 'no' if there are none.
 
@@ -87,9 +91,9 @@ $ release_tools should_release --from=abcde1234
 no
 ```
 
-## changelog
+### changelog
 
-The following will update changelog based on the commit logs that follow the Conventional Commit spec.
+The following will update the changelog based on the commit logs that follow the Conventional Commit spec.
 
 ```sh
 $ release_tools changelog 2.0.1
@@ -117,7 +121,7 @@ A sample changelog would be the following:
 - null-safety ([#6](issues/6)) ([43cf9b7](commit/43cf9b7))
 ```
 
-## update_year
+### update_year
 
 A simple tool for updating the year on LICENSE files. Note that the logic is really simple. It simply updates the first 4-digit number to the current year which may or may not be enough for your needs.
 
@@ -126,7 +130,7 @@ $ release_tools update_year
 $ release_tools update_year --license=MY_LICENSE_FILE
 ```
 
-## remote_tag_id
+### remote_tag_id
 
 Use this to retrieve the commit id of a tag on the git repository's remote.
 
@@ -147,7 +151,7 @@ You can specify the remote repository instead of the default 'origin' if needed:
 $ release_tools remote_tag_id --remote=source 0.2.2
 ```
 
-## current_version
+### current_version
 
 Use this if you need to retrieve the current version on pubspec.yaml
 
@@ -155,3 +159,55 @@ Use this if you need to retrieve the current version on pubspec.yaml
 $ release_tools current_version
 # 1.0.2
 ```
+
+### prepare_release
+
+Complete release preparation logic with the following steps:
+
+1. Get the current version
+2. Get the commits from the last tag or, if a tag is not available for the last release, from the beginning of commit history
+3. Check if a release is appropriate and if so...
+4. Update version on pubspec
+5. Create summary changelog from the commits
+
+```sh
+$ release_tools prepare_release
+```
+
+If there are no releasable commits, it will print the following:
+
+```sh
+There are no releasable commits
+```
+
+Otherwise, it will print something like the following:
+
+```sh
+Version bumped to: 0.2.5
+
+SUMMARY:
+
+# 0.2.5 (2021-05-03)
+
+## Bug Fixes
+
+- **changelog:** performance section in changelogs ([063e07d](commit/063e07d))
+
+## Features
+
+- prepare_release command ([877d63e](commit/877d63e))
+```
+
+
+If you need a summary of the result of the script run, you can pass `-w` to write some summary files like in the following:
+
+```sh
+$ release_tools prepare_release -w
+```
+
+This will create two files, `VERSION.txt` and `RELEASE_SUMMARY.txt` which will contain just the version for release and the summary of changes, respectively.
+
+## Similar Tools
+
+- [pub_release](https://pub.dev/packages/pub_release) - A much more mature release tool. I wanted to use this tool on my projects but found I didn't need a lot of its features. Still awesome!
+- [melos](https://pub.dev/packages/melos) - This one is geared towards monorepos.

@@ -44,11 +44,15 @@ release_tools remote_tag_id 3.2.8 --remote=source
   Future<void> run() async {
     final args = ensureArgResults();
     final version = args.rest.first;
-    final result = await git.lsRemoteTag(
-      tag: version,
-      remote: args['remote'] as String,
-    );
-    final commitId = result.split(RegExp(r'\s+')).first;
+    final commitId = await getRemoteTagId(version, args['remote'] as String);
     printer.printSuccess(commitId);
+  }
+
+  Future<String> getRemoteTagId(String tag, String remote) async {
+    final result = await git.lsRemoteTag(
+      tag: tag,
+      remote: remote,
+    );
+    return result.split(RegExp(r'\s+')).first;
   }
 }

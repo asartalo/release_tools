@@ -1,11 +1,11 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:conventional/conventional.dart';
-import 'package:file/file.dart';
 import 'package:release_tools/printer.dart';
 import 'package:yaml/yaml.dart';
 
 import 'git_exec.dart';
+import 'project.dart';
 
 abstract class ReleaseToolsCommand extends Command {
   Printer get printer;
@@ -22,8 +22,7 @@ abstract class ReleaseToolsCommand extends Command {
 }
 
 mixin VersionCommand on ReleaseToolsCommand {
-  FileSystem get fs;
-  String get workingDir;
+  Project get project;
 
   Future<String> getVersionFromArgsOrPubspec() async {
     final args = ensureArgResults();
@@ -41,13 +40,12 @@ mixin VersionCommand on ReleaseToolsCommand {
   }
 
   Future<String> getVersionFromPubspec() async {
-    final file = fs.directory(workingDir).childFile('pubspec.yaml');
-    if (!await file.exists()) {
+    if (!await project.pubspecExists()) {
       throw NoPubspecFileFound(
         'No pubspec.yaml found.',
       );
     }
-    final contents = await file.readAsString();
+    final contents = await project.getPubspecContents();
     Map yaml;
     try {
       yaml = await loadYaml(contents) as Map;
@@ -80,6 +78,10 @@ mixin GitCommand on ReleaseToolsCommand {
   Future<List<Commit>> getCommits() async {
     final args = ensureArgResults();
     final from = args['from'] is String ? args['from'] as String : null;
-    return git.commits(from: from);
+    return getCommitsFromId(from);
+  }
+
+  Future<List<Commit>> getCommitsFromId(String? id) {
+    return git.commits(from: id);
   }
 }

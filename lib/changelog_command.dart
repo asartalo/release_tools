@@ -1,15 +1,13 @@
-import 'package:args/args.dart';
 import 'package:conventional/conventional.dart';
-import 'package:file/file.dart';
 
 import 'git_exec.dart';
 import 'help_footer.dart';
 import 'printer.dart';
+import 'project.dart';
 import 'release_tools_command.dart';
 
 class ChangelogCommand extends ReleaseToolsCommand with GitCommand {
-  final FileSystem fs;
-  final String workingDir;
+  final Project project;
   final DateTime now;
 
   @override
@@ -37,9 +35,8 @@ release_tools changelog --from=3682c64 2.0.1
 ''');
 
   ChangelogCommand({
-    required this.fs,
+    required this.project,
     required this.git,
-    required this.workingDir,
     required this.printer,
     required this.now,
   }) {
@@ -48,22 +45,29 @@ release_tools changelog --from=3682c64 2.0.1
 
   @override
   Future<void> run() async {
-    if (argResults is ArgResults) {
-      final args = argResults!;
-      if (args.rest.isEmpty) {
-        throw ArgumentError('Please provide a version to mark the changes.');
-      }
-      final version = args.rest.first;
-      final commits = await getCommits();
-      final summary = await writeChangelogToFile(
-        commits: commits,
-        version: version,
-        now: now,
-        file: fs.directory(workingDir).childFile('CHANGELOG.md'),
-      );
-      if (summary is ChangeSummary) {
-        printer.println(summary.toMarkdown());
-      }
+    final args = ensureArgResults();
+    if (args.rest.isEmpty) {
+      throw ArgumentError('Please provide a version to mark the changes.');
     }
+    final version = args.rest.first;
+    final summary = await writeChangelog(
+      commits: await getCommits(),
+      version: version,
+    );
+    if (summary is ChangeSummary) {
+      printer.println(summary.toMarkdown());
+    }
+  }
+
+  Future<ChangeSummary?> writeChangelog({
+    required List<Commit> commits,
+    required String version,
+  }) {
+    return writeChangelogToFile(
+      commits: commits,
+      version: version,
+      now: now,
+      file: project.changelog(),
+    );
   }
 }
