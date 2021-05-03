@@ -1,3 +1,13 @@
+# 0.2.5 (2021-05-03)
+
+## Bug Fixes
+
+- **changelog:** performance section in changelogs ([063e07d](commit/063e07d))
+
+## Features
+
+- prepare_release command ([81c3f15](commit/81c3f15))
+
 # 0.2.4 (2021-04-03)
 
 ## Bug Fixes
