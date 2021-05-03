@@ -1,15 +1,11 @@
-import 'package:file/file.dart';
-
 import 'help_footer.dart';
 import 'printer.dart';
+import 'project.dart';
 import 'release_tools_command.dart';
 
 class CurrentVersionCommand extends ReleaseToolsCommand with VersionCommand {
   @override
-  final FileSystem fs;
-
-  @override
-  final String workingDir;
+  final Project project;
 
   @override
   final Printer printer;
@@ -32,8 +28,7 @@ release_tools current_version
 ''');
 
   CurrentVersionCommand({
-    required this.fs,
-    required this.workingDir,
+    required this.project,
     required this.printer,
   });
 

@@ -1,14 +1,17 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
-import 'package:release_tools/changelog_command.dart';
-import 'package:release_tools/remote_tag_id_command.dart';
-import 'package:release_tools/should_release_command.dart';
-import 'package:release_tools/update_year_command.dart';
+import 'package:release_tools/prepare_release_command.dart';
+import 'package:release_tools/project.dart';
+
+import 'changelog_command.dart';
 import 'current_version_command.dart';
 import 'git_exec.dart';
 import 'next_version_command.dart';
 import 'printer.dart';
+import 'remote_tag_id_command.dart';
+import 'should_release_command.dart';
 import 'update_version_command.dart';
+import 'update_year_command.dart';
 
 class ReleaseToolsRunner {
   final GitExec git;
@@ -26,42 +29,50 @@ class ReleaseToolsRunner {
   });
 
   Future<void> run(List<String> arguments) async {
+    final project = Project(fs: fs, workingDir: workingDir);
+    final nextVersionCommand = NextVersionCommand(
+      project: project,
+      printer: printer,
+      git: git,
+    );
+    final remoteTagIdCommand = RemoteTagIdCommand(
+      printer: printer,
+      git: git,
+    );
+    final changelogCommand = ChangelogCommand(
+      printer: printer,
+      project: project,
+      git: git,
+      now: now,
+    );
+    final updateVersionCommand = UpdateVersionCommand(
+      printer: printer,
+      project: project,
+    );
+
     final cmd = CommandRunner("release_tools",
         "A collection of tools to help with creating releases and publishing libraries.")
-      ..addCommand(UpdateVersionCommand(
-        fs: fs,
-        printer: printer,
-        workingDir: workingDir,
-      ))
-      ..addCommand(ChangelogCommand(
-        fs: fs,
-        printer: printer,
-        workingDir: workingDir,
-        git: git,
-        now: now,
-      ))
-      ..addCommand(NextVersionCommand(
-        fs: fs,
-        printer: printer,
-        workingDir: workingDir,
-        git: git,
-      ))
+      ..addCommand(nextVersionCommand)
+      ..addCommand(changelogCommand)
+      ..addCommand(updateVersionCommand)
       ..addCommand(UpdateYearCommand(
-        fs: fs,
         printer: printer,
-        workingDir: workingDir,
+        project: project,
         now: now,
       ))
-      ..addCommand(RemoteTagIdCommand(
-        printer: printer,
-        git: git,
-      ))
+      ..addCommand(remoteTagIdCommand)
       ..addCommand(CurrentVersionCommand(
-        fs: fs,
         printer: printer,
-        workingDir: workingDir,
+        project: project,
       ))
-      ..addCommand(ShouldReleaseCommand(printer: printer, git: git));
+      ..addCommand(ShouldReleaseCommand(printer: printer, git: git))
+      ..addCommand(PrepareReleaseCommand(
+        printer: printer,
+        nextVersionCommand: nextVersionCommand,
+        remoteTagIdCommand: remoteTagIdCommand,
+        changelogCommand: changelogCommand,
+        updateVersionCommand: updateVersionCommand,
+      ));
 
     await cmd.run(arguments);
   }

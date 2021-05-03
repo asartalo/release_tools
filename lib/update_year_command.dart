@@ -2,14 +2,14 @@ import 'package:file/file.dart';
 
 import 'help_footer.dart';
 import 'printer.dart';
+import 'project.dart';
 import 'release_tools_command.dart';
 
 final _yearRegexp = RegExp(r'\d{4}');
 const _defaultLicenseFiles = ['LICENSE', 'LICENSE.txt'];
 
 class UpdateYearCommand extends ReleaseToolsCommand {
-  final FileSystem fs;
-  final String workingDir;
+  final Project project;
   final DateTime now;
 
   @override
@@ -34,8 +34,7 @@ release_tools update_year --license=MY_LICENSE_FILE
 ''');
 
   UpdateYearCommand({
-    required this.fs,
-    required this.workingDir,
+    required this.project,
     required this.printer,
     required this.now,
   }) {
@@ -79,7 +78,7 @@ release_tools update_year --license=MY_LICENSE_FILE
     late File file;
     bool found = false;
     for (final fileName in _defaultLicenseFiles) {
-      file = fs.directory(workingDir).childFile(fileName);
+      file = project.getFile(fileName);
       if (await file.exists()) {
         found = true;
         break;
@@ -94,7 +93,7 @@ release_tools update_year --license=MY_LICENSE_FILE
   }
 
   Future<File> _findLicenseFile(String name) async {
-    final file = fs.directory(workingDir).childFile(name);
+    final file = project.getFile(name);
     if (!await file.exists()) {
       throw StateError('Unable to find a license file "$name".');
     }
