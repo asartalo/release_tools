@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ '*' ]
+    branches: ["*"]
   pull_request:
-    branches: [ '*' ]
+    branches: ["*"]
 
 jobs:
   commitlint:
@@ -23,42 +23,40 @@ jobs:
       branch: ${{ steps.branchinfo.outputs.branch }}
 
     steps:
+      - uses: nelonoel/branch-name@v1.0.1
 
-    - uses: nelonoel/branch-name@v1.0.1
+      - name: Store the branch name
+        id: branchinfo
+        run: echo "::set-output name=branch::${BRANCH_NAME}"
 
-    - name: Store the branch name
-      id: branchinfo
-      run: echo "::set-output name=branch::${BRANCH_NAME}"
+      - name: Check if we were able to save branch info
+        run: echo ${{ steps.branchinfo.outputs.branch }}
 
-    - name: Check if we were able to save branch info
-      run: echo ${{ steps.branchinfo.outputs.branch }}
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
 
-    - uses: cedx/setup-dart@v2
-      with:
-        release-channel: stable
+      - uses: actions/checkout@v2
 
-    - uses: actions/checkout@v2
+      - name: Get dependencies
+        run: pub get
 
-    - name: Get dependencies
-      run: pub get
+      - name: Check dart formatting
+        run: dart format --set-exit-if-changed .
 
-    - name: Check dart formatting
-      run: dart format --set-exit-if-changed .
+      - name: Statically analyze the Dart code for any errors.
+        run: dart analyze .
 
-    - name: Statically analyze the Dart code for any errors.
-      run: dart analyze .
+      - name: Run Tests with coverage
+        run: dart test --coverage="coverage"
 
-    - name: Run Tests with coverage
-      run: dart test --coverage="coverage"
+      - name: Prepare coverage
+        run: pub run coverage:format_coverage --lcov --in=coverage --out=lcov.info --packages=.packages --report-on=lib
 
-    - name: Prepare coverage
-      run: pub run coverage:format_coverage --lcov --in=coverage --out=lcov.info --packages=.packages --report-on=lib
-
-    - name: Upload coverage
-      uses: coverallsapp/github-action@v1.1.2
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: lcov.info
+      - name: Upload coverage
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: lcov.info
 
   release:
     name: Release
@@ -67,90 +65,89 @@ jobs:
     if: ${{ needs.test.outputs.branch == 'main' }}
 
     steps:
-    - run: echo ${{ needs.test.outputs.branch }}
+      - run: echo ${{ needs.test.outputs.branch }}
 
-    - uses: cedx/setup-dart@v2
-      with:
-        release-channel: stable
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
 
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    - name: Get dependencies
-      run: pub get
+      - name: Get dependencies
+        run: pub get
 
-    - name: Get current version
-      id: currentVersion
-      run: echo "::set-output name=value::$(pub run release_tools current_version)"
+      - name: Get current version
+        id: currentVersion
+        run: echo "::set-output name=value::$(pub run release_tools current_version)"
 
-    - name: Get commitId of last tag of that version
-      id: lastCommitId
-      run: echo "::set-output name=value::$(pub run release_tools remote_tag_id ${{ steps.currentVersion.outputs.value }})"
+      - name: Get commitId of last tag of that version
+        id: lastCommitId
+        run: echo "::set-output name=value::$(pub run release_tools remote_tag_id ${{ steps.currentVersion.outputs.value }})"
 
-    - name: Use commitId to check if we should release
-      id: shouldRelease
-      run: echo "::set-output name=value::$(pub run release_tools should_release --from ${{ steps.lastCommitId.outputs.value }})"
+      - name: Use commitId to check if we should release
+        id: shouldRelease
+        run: echo "::set-output name=value::$(pub run release_tools should_release --from ${{ steps.lastCommitId.outputs.value }})"
 
-    - run: echo "Should we release? ${{ steps.shouldRelease.outputs.value }}"
+      - run: echo "Should we release? ${{ steps.shouldRelease.outputs.value }}"
 
-    - name: If we should release get the next version
-      if: steps.shouldRelease.outputs.value == 'yes'
-      id: nextVersion
-      run: echo "::set-output name=value::$(pub run release_tools next_version --from ${{ steps.lastCommitId.outputs.value }})"
+      - name: If we should release get the next version
+        if: steps.shouldRelease.outputs.value == 'yes'
+        id: nextVersion
+        run: echo "::set-output name=value::$(pub run release_tools next_version --from ${{ steps.lastCommitId.outputs.value }})"
 
-    - run: echo "RELEASING ${{ steps.nextVersion.outputs.value }}"
+      - run: echo "RELEASING ${{ steps.nextVersion.outputs.value }}"
 
-    - name: Update version
-      if: steps.shouldRelease.outputs.value == 'yes'
-      id: updateVersion
-      run: pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}
+      - name: Update version
+        if: steps.shouldRelease.outputs.value == 'yes'
+        id: updateVersion
+        run: pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}
 
-    - name: Write changelog
-      id: changelog
-      if: steps.shouldRelease.outputs.value == 'yes'
-      run: |
-        output=$(pub run release_tools changelog --from ${{ steps.lastCommitId.outputs.value }} ${{ steps.nextVersion.outputs.value }})
-        output="${output//'%'/'%25'}"
-        output="${output//$'\n'/'%0A'}"
-        output="${output//$'\r'/'%0D'}"
-        echo "::set-output name=summary::$output"
+      - name: Write changelog
+        id: changelog
+        if: steps.shouldRelease.outputs.value == 'yes'
+        run: |
+          output=$(pub run release_tools changelog --from ${{ steps.lastCommitId.outputs.value }} ${{ steps.nextVersion.outputs.value }})
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=summary::$output"
 
-    - name: Commit Release
-      if: steps.shouldRelease.outputs.value == 'yes'
-      run: |
-        git diff
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add .
-        git commit -m "chore(release): release for ${{ steps.nextVersion.outputs.value }}"
-        git push
+      - name: Commit Release
+        if: steps.shouldRelease.outputs.value == 'yes'
+        run: |
+          git diff
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "chore(release): release for ${{ steps.nextVersion.outputs.value }}"
+          git push
 
-    - name: Create Release
-      if: steps.shouldRelease.outputs.value == 'yes'
-      id: createRelease
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.nextVersion.outputs.value }}
-        release_name: Release ${{ steps.nextVersion.outputs.value }}
-        body: |
-          Changes in this Release
+      - name: Create Release
+        if: steps.shouldRelease.outputs.value == 'yes'
+        id: createRelease
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.nextVersion.outputs.value }}
+          release_name: Release ${{ steps.nextVersion.outputs.value }}
+          body: |
+            Changes in this Release
 
-          ${{ steps.changelog.outputs.summary }}
+            ${{ steps.changelog.outputs.summary }}
 
-        draft: false
-        prerelease: false
+          draft: false
+          prerelease: false
 
-    - name: Setup credentials
-      if: steps.shouldRelease.outputs.value == 'yes'
-      run: |
-        mkdir -p ~/.pub-cache
-        cat <<EOF > ~/.pub-cache/credentials.json
-        ${{ secrets.PUB_CREDENTIALS }}
-        EOF
+      - name: Setup credentials
+        if: steps.shouldRelease.outputs.value == 'yes'
+        run: |
+          mkdir -p ~/.pub-cache
+          cat <<EOF > ~/.pub-cache/credentials.json
+          ${{ secrets.PUB_CREDENTIALS }}
+          EOF
 
-    - name: Publish package
-      if: steps.shouldRelease.outputs.value == 'yes'
-      run: pub publish -f
+      - name: Publish package
+        if: steps.shouldRelease.outputs.value == 'yes'
+        run: pub publish -f
