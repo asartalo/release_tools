@@ -4,12 +4,12 @@ version: 0.2.4
 homepage: https://github.com/asartalo/release_tools
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   ansicolor: ^2.0.1
   args: ^2.0.0
-  conventional: ^0.2.4
+  conventional: ^0.3.0
   equatable: ^2.0.0
   file: ^6.1.0
   pub_semver: ^2.0.0

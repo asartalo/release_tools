@@ -82,6 +82,54 @@ void main() {
             result: '2.0.0',
             description: 'updates major version',
           ),
+          'when there are no commits and with build number': _T(
+            commits: [],
+            previousVersion: "1.2.3+1",
+            result: "1.2.3+1",
+            description: 'no version change',
+          ),
+          'when there are just chores and with build number': _T(
+            commits: [chore],
+            previousVersion: "2.2.1+1",
+            result: "2.2.1+1",
+            description: 'no version change',
+          ),
+          'when there is a bug fix and with build number': _T(
+            commits: [chore, fix],
+            previousVersion: '5.6.7+2',
+            result: '5.6.8+3',
+            description: 'updates version to patch and increments build number',
+          ),
+          'when there is a new feature fix and with build number': _T(
+            commits: [feat, chore, fix],
+            previousVersion: '2.4.6+3',
+            result: '2.5.0+4',
+            description: 'updates minor version and increments build number',
+          ),
+          'when there is a breaking change and with build number': _T(
+            commits: [feat, chore, breaking, fix],
+            previousVersion: '12.34.81+4',
+            result: '13.0.0+5',
+            description: 'updates major version and increments build number',
+          ),
+          'when there is a breaking change and with build number with freezeBuild flag':
+              _T(
+            commits: [feat, chore, breaking, fix],
+            freezeBuild: true,
+            previousVersion: '12.34.81+4',
+            result: '13.0.0+4',
+            description:
+                'updates major version but does not increment build number',
+          ),
+          'when there is a breaking change and with build number but passed with noBuild flag':
+              _T(
+            commits: [feat, chore, breaking, fix],
+            noBuild: true,
+            previousVersion: '12.34.81+4',
+            result: '13.0.0',
+            description:
+                'updates to next major version but does not include build number',
+          ),
         };
 
         testData.forEach((testDescription, data) {
@@ -91,7 +139,21 @@ void main() {
             });
 
             test(data.description, () async {
-              await runner.run([command, originalVersion]);
+              String version;
+              if (data.previousVersion is String) {
+                version = data.previousVersion!;
+              } else {
+                version = originalVersion;
+              }
+              final args = [command];
+              if (data.freezeBuild) {
+                args.add('--freezeBuild');
+              }
+              if (data.noBuild) {
+                args.add('--noBuild');
+              }
+              args.add(version);
+              await runner.run(args);
               expect(printer.prints.first, equals(data.result));
             });
           });
@@ -145,10 +207,16 @@ class _T {
   final List<String> commits;
   final String result;
   final String description;
+  final String? previousVersion;
+  final bool freezeBuild;
+  final bool noBuild;
   _T({
     required this.commits,
     required this.result,
     required this.description,
+    this.previousVersion,
+    this.freezeBuild = false,
+    this.noBuild = false,
   });
 }
 

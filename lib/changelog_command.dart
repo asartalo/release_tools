@@ -1,4 +1,6 @@
 import 'package:conventional/conventional.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:release_tools/version_helpers.dart';
 
 import 'git_exec.dart';
 import 'help_footer.dart';
@@ -65,7 +67,7 @@ release_tools changelog --from=3682c64 2.0.1
   }) {
     return writeChangelogToFile(
       commits: commits,
-      version: version,
+      version: versionWithoutBuild(Version.parse(version)).toString(),
       now: now,
       file: project.changelog(),
     );

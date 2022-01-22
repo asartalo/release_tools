@@ -3,7 +3,7 @@
 A collection of scripts to help with creating releases for publishing libraries and dart packages.
 
 
-[![build](https://github.com/asartalo/release_tools/actions/workflows/ci.yml/badge.svg)](https://github.com/asartalo/conventional/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/asartalo/release_tools/badge.svg?branch=main)](https://coveralls.io/github/asartalo/release_tools?branch=main)
+[![build](https://github.com/asartalo/release_tools/actions/workflows/ci.yml/badge.svg)](https://github.com/asartalo/release_tools/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/asartalo/release_tools/badge.svg?branch=main)](https://coveralls.io/github/asartalo/release_tools?branch=main)
  [![Pub](https://img.shields.io/pub/v/release_tools.svg)](https://pub.dev/packages/release_tools)
 ## Features
 
@@ -38,7 +38,7 @@ $ pub global activate release_tools 0.2.5
 
 ### update_version
 
-The following command will update the version on `pubspec.yaml` to version 1.0.1
+The following command will update the version on `pubspec.yaml` on the current directory to version 1.0.1
 
 ```sh
 $ release_tools update_version 1.0.1
@@ -49,15 +49,11 @@ $ release_tools update_version 1.0.1
 If you leave out the version to increment from, it will attempt to obtain the version from pubspec.yaml
 
 ```sh
+$ release_tools next_version 1.0.1
 $ release_tools next_version
 ```
 
-The following command will incremeent the commands based on the commit logs that follow the conventional commit spec.
-
-```sh
-$ release_tools next_version 1.0.1
-# 1.1.0
-```
+If you don't pass the version to increment from, it will attempt to get the version from `pubspec.yaml`. The script will return the next version based on the releasable commit logs that follow the conventional commit spec.
 
 For example, if the commit logs contain a commit with the following message:
 
@@ -72,13 +68,34 @@ BREAKING-CHANGE: this changes everything
 2.0.0
 ```
 
-By default it considers all the logs from the beginning but you can also specify a starting range:
+By default, `next_version` considers all the logs from the beginning of the commit history but you can also specify a starting range:
 
 ```sh
 $ release_tools next_version --from=abcde1234 1.0.1
 ```
 
 ...where `--from` should point to a commit id.
+
+It will also increment the build number if the version on the `pubspec.yaml` or the version passed has it if there are releasable commits.
+
+```sh
+$ release_tools next_version 1.0.1+1
+# 1.1.0+2
+```
+
+If you don't want this behavior, pass the `--freezeBuild` flag.
+
+```sh
+$ release_tools next_version --freezeBuild 1.0.1+1
+# 1.1.0+1
+```
+
+To output just the version without the build number, pass the `--noBuild` flag.
+
+```sh
+$ release_tools next_version --noBuild 1.0.1+1
+# 1.1.0
+```
 
 ### should_release
 
@@ -91,9 +108,11 @@ $ release_tools should_release --from=abcde1234
 no
 ```
 
+"Releasable" here means that the commit logs contain at least one `fix` (PATCH), `feat` (MINOR), or `BREAKING` (MAJOR) logs as described in the conventional commits spec.
+
 ### changelog
 
-The following will update the changelog based on the commit logs that follow the Conventional Commit spec.
+The following will update the changelog based on the releasable commits.
 
 ```sh
 $ release_tools changelog 2.0.1
