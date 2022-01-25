@@ -20,10 +20,11 @@ void main() {
       late StubPrinter printer;
       late StubGitExec git;
       const command = 'prepare_release';
-      const pubspecContents = '''
+      String getPubspecContents([originalVersion = '1.0.0']) {
+        return '''
 name: foo_bar
 description: A sample pubspec file._file
-version: 1.0.0
+version: $originalVersion
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -34,6 +35,8 @@ dependencies:
 dev_dependencies:
   test: ^1.14.4
 ''';
+      }
+
       const originalChangelogContent = '''
 # 1.0.0 (2021-02-09)
 
@@ -110,7 +113,7 @@ dev_dependencies:
 
 - null-safety ([43cf9b7](commit/43cf9b7))
 ''';
-        setUp(() => createPubspec(pubspecContents));
+        setUp(() => createPubspec(getPubspecContents()));
 
         group('when there is a tag from last release', () {
           setUp(() async {
@@ -242,9 +245,107 @@ dev_dependencies:
                     await summaryFile.readAsString(), equals(expectedSummary));
               });
 
-              test('it does not write a version file', () async {
+              test('it writes a version file', () async {
                 final versionFile = getFile('VERSION.txt');
                 expect(await versionFile.readAsString(), equals('2.0.0'));
+              });
+            });
+          });
+        });
+
+        group('when there is no tag/release from before', () {
+          setUp(() async {
+            git.lsRemoteTagResponse = '';
+            await runner.run([command]);
+          });
+
+          test('it gets commits from earliest commit', () {
+            expect(git.commitsFrom, equals(null));
+          });
+        });
+      });
+
+      group('happy paths with build number', () {
+        const expectedSummary = '''
+# 2.0.0 (2021-02-10)
+
+## Bug Fixes
+
+- plug holes ([cf60800](commit/cf60800))
+
+## Features
+
+- it jumps ([925fcd3](commit/925fcd3))
+
+## BREAKING CHANGES
+
+- null-safety ([43cf9b7](commit/43cf9b7))
+''';
+        setUp(() => createPubspec(getPubspecContents('1.0.0+1')));
+
+        group('when there is a tag from last release', () {
+          setUp(() async {
+            git.lsRemoteTagResponse = '''
+3ed81541a61c7502b658c027f6d5ec87c129c1a9	refs/tags/1.0.0''';
+          });
+
+          void logicTest() {
+            test('it gets remote tag for the version', () async {
+              expect(git.lsRemoteTagArgs['tag'], equals('1.0.0'));
+            });
+
+            test('it logs from that tag commit id', () async {
+              expect(
+                git.commitsFrom,
+                equals('3ed81541a61c7502b658c027f6d5ec87c129c1a9'),
+              );
+            });
+          }
+
+          void successTest() {
+            logicTest();
+
+            test('it updates pubspec version', () async {
+              expect(await readPubspec(), contains('version: 2.0.0+2'));
+            });
+
+            test('it updates changelog', () async {
+              expect(
+                await getChangelogFileContents(),
+                contains(expectedSummary),
+              );
+            });
+
+            test('it prints the version', () {
+              expect(
+                printer.prints.join('\n'),
+                contains('Version bumped to: 2.0.0'),
+              );
+            });
+
+            test('it prints the summary', () {
+              expect(
+                printer.prints.join('\n'),
+                contains('SUMMARY:\n\n$expectedSummary'),
+              );
+            });
+          }
+
+          group('with releasable commits', () {
+            setUp(() {
+              git.commitsResponse = parseCommits([feat, chore, breaking, fix]);
+            });
+
+            group('when passed with -w', () {
+              setUp(() async {
+                await runner.run([command, '-w']);
+              });
+
+              successTest();
+
+              test('it writes a version file', () async {
+                final versionFile = getFile('VERSION.txt');
+                expect(await versionFile.readAsString(), equals('2.0.0+2'));
               });
             });
           });

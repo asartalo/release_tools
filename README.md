@@ -46,8 +46,6 @@ $ release_tools update_version 1.0.1
 
 ### next_version
 
-If you leave out the version to increment from, it will attempt to obtain the version from pubspec.yaml
-
 ```sh
 $ release_tools next_version 1.0.1
 $ release_tools next_version
@@ -184,9 +182,9 @@ $ release_tools current_version
 Complete release preparation logic with the following steps:
 
 1. Get the current version
-2. Get the commits from the last tag or, if a tag is not available for the last release, from the beginning of commit history
+2. Get the commits from the last version tag or, if a version tag is not available for the last release, it will get them from the beginning of the commit history
 3. Check if a release is appropriate and if so...
-4. Update version on pubspec
+4. Update version on pubspec including incrementing the build number
 5. Create summary changelog from the commits
 
 ```sh
