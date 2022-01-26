@@ -3,6 +3,9 @@
 .packages
 .vscode
 
+# vscode files
+.vscode/*
+
 # Conventional directory for build outputs
 build/
 
