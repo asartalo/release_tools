@@ -1,3 +1,13 @@
+# 0.3.0 (2022-01-26)
+
+## Features
+
+- **next_version:** build number handling ([0a50264](commit/0a50264))
+
+## BREAKING CHANGES
+
+- **prepare_release:** increments build number ([3fb85e7](commit/3fb85e7))
+
 # 0.2.5 (2021-05-03)
 
 ## Bug Fixes
