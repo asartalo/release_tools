@@ -43,8 +43,8 @@ release_tools remote_tag_id 3.2.8 --remote=source
   @override
   Future<void> run() async {
     final args = ensureArgResults();
-    final version = args.rest.first;
-    final commitId = await getRemoteTagId(version, args['remote'] as String);
+    final tag = args.rest.first;
+    final commitId = await getRemoteTagId(tag, args['remote'] as String);
     printer.printSuccess(commitId);
   }
 

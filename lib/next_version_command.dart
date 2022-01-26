@@ -1,5 +1,6 @@
 import 'package:conventional/conventional.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:release_tools/version_helpers.dart';
 
 import 'git_exec.dart';
 import 'help_footer.dart';
@@ -44,24 +45,47 @@ release_tools next_version --from=3682c64 2.0.1
     required this.printer,
   }) {
     gitFromOption();
+    incrementBuildFromOption();
+  }
+
+  void incrementBuildFromOption() {
+    argParser.addFlag(
+      'freezeBuild',
+      abbr: 'b',
+      help: 'Do not increment build number',
+    );
+    argParser.addFlag(
+      'noBuild',
+      abbr: 'n',
+      help: 'Do not include build number in output',
+    );
   }
 
   @override
   Future<void> run() async {
     final currentVersion = await getVersionFromArgsOrPubspec();
-    printer.println(
-      await getNextVersionFromString(
-        await getCommits(),
-        currentVersion,
-      ),
+    final args = ensureArgResults();
+    final incrementBuild = !(args['freezeBuild'] as bool);
+    final theNextVersion = await getNextVersionFromString(
+      await getCommits(),
+      currentVersion,
+      incrementBuild: incrementBuild,
+      noBuild: args['noBuild'] as bool,
     );
+    printer.println(theNextVersion);
   }
 
   Future<String> getNextVersionFromString(
     List<Commit> commits,
-    String currentVersion,
-  ) async {
-    final newVersion = nextVersion(Version.parse(currentVersion), commits);
-    return newVersion.toString();
+    String currentVersion, {
+    bool incrementBuild = false,
+    bool noBuild = false,
+  }) async {
+    final newVersion = nextVersion(
+      Version.parse(currentVersion),
+      commits,
+      incrementBuild: incrementBuild,
+    );
+    return (noBuild ? versionWithoutBuild(newVersion) : newVersion).toString();
   }
 }

@@ -3,6 +3,7 @@ import 'package:release_tools/changelog_command.dart';
 import 'package:release_tools/printer.dart';
 import 'package:release_tools/remote_tag_id_command.dart';
 import 'package:release_tools/update_version_command.dart';
+import 'package:release_tools/version_helpers.dart';
 
 import 'next_version_command.dart';
 import 'release_tools_command.dart';
@@ -40,15 +41,19 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
   @override
   Future<void> run() async {
     final currentVersion = await nextVersionCommand.getVersionFromPubspec();
+    final currentVersionWithoutBuild =
+        versionStringWithoutBuild(currentVersion);
     final tagId = await remoteTagIdCommand.getRemoteTagId(
-      currentVersion,
+      currentVersionWithoutBuild,
       'origin',
     );
-    final commits =
-        await changelogCommand.getCommitsFromId(tagId.isEmpty ? null : tagId);
+    final commits = await changelogCommand.getCommitsFromId(
+      tagId.isEmpty ? null : tagId,
+    );
     final nextVersion = await nextVersionCommand.getNextVersionFromString(
       commits,
       currentVersion,
+      incrementBuild: true,
     );
     if (nextVersion != currentVersion) {
       await _createRelease(

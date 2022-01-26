@@ -1,6 +1,6 @@
+import 'package:args/args.dart';
 import 'package:file/file.dart';
 import 'package:yaml/yaml.dart';
-import 'package:args/args.dart';
 
 import 'help_footer.dart';
 import 'printer.dart';
