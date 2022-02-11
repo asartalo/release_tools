@@ -98,10 +98,15 @@ jobs:
 
       - run: echo "RELEASING ${{ steps.nextVersion.outputs.value }}"
 
-      - name: Update version
+      - name: Update version on pubspec.yaml
         if: steps.shouldRelease.outputs.value == 'yes'
         id: updateVersion
         run: pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}
+
+      - name: Update version on README.md
+        if: steps.shouldRelease.outputs.value == 'yes'
+        id: updateVersionReadme
+        run: pub run release_tools update_version --file="README.md" --template="pub global activate release_tools [VERSION]" ${{ steps.nextVersion.outputs.value }}
 
       - name: Write changelog
         id: changelog
