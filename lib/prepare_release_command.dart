@@ -75,7 +75,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
       version: nextVersion,
     );
 
-    await updateVersionCommand.updateVersionOnPubspecFile(nextVersion);
+    await updateVersionCommand.updateVersionOnFile(nextVersion);
     if (summary is ChangeSummary) {
       if (args['writeSummary'] as bool) {
         final project = changelogCommand.project;

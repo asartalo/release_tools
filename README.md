@@ -44,6 +44,40 @@ The following command will update the version on `pubspec.yaml` on the current d
 $ release_tools update_version 1.0.1
 ```
 
+If you want to update the version on a text file other than `pubspec.yaml`, use the `--file` option:
+
+```sh
+$ release_tools update_version --file="README.md" 1.0.1
+```
+
+By default, it will look for strings that look like semver-flavored version strings. If you want to be specific, you can specify a template for replacement. For example, if the `README.md` file contains the following text:
+
+```markdown
+# My Project
+
+Current Version: 1.0.0
+
+Starting from version 1.0.0, all alert buttons will be red.
+
+```
+
+Running the following command...
+
+```sh
+$ release_tools update_version --file="README.md" --template="Current Version: [VERSION]" 1.0.1
+```
+
+...will change the contents of `README.md` to:
+
+```markdown
+# My Project
+
+Current Version: 1.0.1
+
+Starting from version 1.0.0, all alert buttons will be red.
+
+```
+
 ### next_version
 
 ```sh

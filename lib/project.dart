@@ -25,6 +25,10 @@ class Project {
     return pubspec().exists();
   }
 
+  Future<bool> fileExists(String fileName) {
+    return getFile(fileName).exists();
+  }
+
   Future<void> writeToChangelog(String contents) async {
     await changelog().writeAsString(contents);
   }

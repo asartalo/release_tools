@@ -1,7 +1,7 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:release_tools/release_tools_runner.dart';
 import 'package:release_tools/printer.dart';
+import 'package:release_tools/release_tools_runner.dart';
 import 'package:release_tools/update_version_command.dart';
 import 'package:test/test.dart';
 import 'runner_setup.dart';
@@ -22,13 +22,27 @@ void main() {
         printer = context.printer;
       });
 
+      Future<void> writeFile(String fileName, String contents) async {
+        final file = fs.directory(workingDir).childFile(fileName);
+        await file.writeAsString(contents);
+      }
+
       Future<void> validYamlFile() async {
-        final file = fs.directory(workingDir).childFile('pubspec.yaml');
-        await file.writeAsString(kValidPubspecFile);
+        await writeFile('pubspec.yaml', kValidPubspecFile);
+      }
+
+      Future<String> getFileContents(String fileName) async {
+        return fs
+            .file(fs.directory(workingDir).childFile(fileName))
+            .readAsString();
+      }
+
+      Future<File> getFile(String fileName) async {
+        return fs.file(fs.directory(workingDir).childFile(fileName));
       }
 
       Future<File> getPubFile() async {
-        return fs.file(fs.directory(workingDir).childFile('pubspec.yaml'));
+        return getFile('pubspec.yaml');
       }
 
       group('errors', () {
@@ -83,6 +97,78 @@ dev_dependencies:
         });
       });
 
+      group('updates a version to a specified file', () {
+        setUp(() async {
+          await writeFile('README.md', '''
+Hello.
+This is version 1.0.0. Everything is awesome.
+''');
+          await runner.run([
+            'update_version',
+            "--template=This is version [VERSION].",
+            '--file=README.md',
+            '2.0.0',
+          ]);
+        });
+
+        test('it updates the version in file', () async {
+          final contents = await getFileContents('README.md');
+          expect(contents, equals('''
+Hello.
+This is version 2.0.0. Everything is awesome.
+'''));
+        });
+      });
+
+      group('when template and file are set', () {
+        const newVersion = '2.0.0';
+        final testData = {
+          'with just prefix': TemplateTest(
+            contents: 'Hello.\nThis is version 1.0.0.\nEverything is awesome.',
+            template: 'version [VERSION]',
+            expectedResults:
+                'Hello.\nThis is version $newVersion.\nEverything is awesome.',
+          ),
+          'when template just [VERSION]': TemplateTest(
+            contents: 'Hello.\nThis is version 1.0.0.\nEverything is awesome.',
+            template: '[VERSION]',
+            expectedResults:
+                'Hello.\nThis is version $newVersion.\nEverything is awesome.',
+          ),
+          'When template is empty': TemplateTest(
+            contents: 'Hello.\nThis is version 1.0.0.\nEverything is awesome.',
+            template: '',
+            expectedResults:
+                'Hello.\nThis is version $newVersion.\nEverything is awesome.',
+          ),
+          'When version is not specified': TemplateTest(
+            contents: 'Hello.\nThis is version 1.0.0.\nEverything is awesome.',
+            template: 'This is versino .',
+            expectedResults:
+                'Hello.\nThis is version 1.0.0.\nEverything is awesome.',
+          ),
+        };
+
+        testData.forEach((description, data) {
+          group(description, () {
+            setUp(() async {
+              await writeFile('README.md', data.contents);
+              await runner.run([
+                'update_version',
+                "--template=${data.template}",
+                '--file=README.md',
+                newVersion,
+              ]);
+            });
+
+            test('it updates the version in file correctly', () async {
+              final contents = await getFileContents('README.md');
+              expect(contents, equals(data.expectedResults));
+            });
+          });
+        });
+      });
+
       test('it prints help text', () async {
         await runner.run(['update_version', '--help']);
         final helpText = printer.prints.join('\n');
@@ -93,6 +179,18 @@ dev_dependencies:
         expect(helpText, contains('Usage:'));
       });
     });
+  });
+}
+
+class TemplateTest {
+  final String template;
+  final String contents;
+  final String expectedResults;
+
+  TemplateTest({
+    required this.template,
+    required this.contents,
+    required this.expectedResults,
   });
 }
 
