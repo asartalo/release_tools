@@ -1,3 +1,9 @@
+# 0.3.1 (2022-02-11)
+
+## Features
+
+- **update_version:** set the file to update ([104e677](commit/104e677))
+
 # 0.3.0 (2022-01-26)
 
 ## Features

@@ -1,6 +1,6 @@
 name: release_tools
 description: A collection of scripts to help with creating releases and publishing libraries.
-version: 0.3.0
+version: 0.3.1
 homepage: https://github.com/asartalo/release_tools
 
 environment:
