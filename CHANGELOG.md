@@ -1,3 +1,10 @@
+# 0.3.2 (2022-07-26)
+
+## Bug Fixes
+
+- new -v flag to show release_tools version ([4f4c4ce](commit/4f4c4ce))
+- update dependencies ([c4bba0a](commit/c4bba0a))
+
 # 0.3.1 (2022-02-11)
 
 ## Features

@@ -31,7 +31,7 @@ If your project needs are typical, you probably only need `prepare_release`. How
 I recommend installing `release_tools` globally so that it won't interfere with your project's own dependecies. Constrain it to a specific version to limit supply-chain exploits.
 
 ```sh
-$ pub global activate release_tools 0.3.1
+$ pub global activate release_tools 0.3.2
 ```
 
 ## Scripts
