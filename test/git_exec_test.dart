@@ -36,16 +36,15 @@ void main() {
 
         test('it looks for first hash', () {
           final firstCall = exec.executeArgs.first;
-          expect(firstCall.first, equals('git'));
           expect(
-            firstCall[1].join(' '),
-            equals('rev-list --max-parents=0 HEAD'),
+            firstCall.join(' '),
+            equals('git rev-list --max-parents=0 HEAD'),
           );
         });
 
         test('passes git log command', () {
           expect(exec.executeArgs[1].first, equals('git'));
-          expect(exec.executeArgs[1][1], contains('$commitId..HEAD'));
+          expect(exec.executeArgs[1], contains('$commitId..HEAD'));
         });
 
         test('parses commit logs', () {
@@ -74,7 +73,7 @@ void main() {
 
         test('passes git log command', () {
           expect(exec.executeArgs[0].first, equals('git'));
-          expect(exec.executeArgs[0][1], contains('$commitId..HEAD'));
+          expect(exec.executeArgs[0], contains('$commitId..HEAD'));
         });
       });
     });
@@ -93,8 +92,7 @@ void main() {
 
       test('runs git rev-parse', () {
         final args = exec.executeArgs.first;
-        expect(args.first, equals('git'));
-        expect(args[1].join(' '), equals('rev-parse foo^{}'));
+        expect(args.join(' '), equals('git rev-parse foo^{}'));
       });
 
       test('returns the value from rev-parse', () {
@@ -108,7 +106,7 @@ void main() {
 
       String getLasatExecArgs() {
         final args = exec.executeArgs.last;
-        return '${args.first} ${args[1].join(' ')}';
+        return args.join(' ');
       }
 
       group('calling', () {
@@ -134,8 +132,10 @@ void main() {
 
         test('with a tag but with no remote', () async {
           result = await git.lsRemoteTag(tag: '2.0.0');
-          expect(getLasatExecArgs(),
-              equals('git ls-remote -q --tags origin 2.0.0'));
+          expect(
+            getLasatExecArgs(),
+            equals('git ls-remote -q --tags origin 2.0.0'),
+          );
         });
       });
 

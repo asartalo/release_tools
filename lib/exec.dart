@@ -53,12 +53,12 @@ class Execution {
 typedef Executioner = Execution Function(String, List<String>);
 
 class StubExec implements Exec {
-  final List<List<dynamic>> executeArgs = [];
+  final List<List<String>> executeArgs = [];
   late Executioner executioner;
 
   @override
   Future<Execution> execute(String cmd, List<String> args) async {
-    executeArgs.add([cmd, args]);
+    executeArgs.add([cmd, ...args]);
     return executioner(cmd, args);
   }
 }

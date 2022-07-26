@@ -52,7 +52,8 @@ void main() {
         test('prints the version on pubspec.yaml', () async {
           final pubspecFile =
               fs.directory(workingDir).childFile('pubspec.yaml');
-          await pubspecFile.writeAsString('''
+          await pubspecFile.writeAsString(
+            '''
 name: foo_bar
 description: A sample pubspec file._file
 version: 2.0.0
@@ -65,7 +66,8 @@ dependencies:
 
 dev_dependencies:
   test: ^1.14.4
-''');
+''',
+          );
           await runner.run([command]);
           expect(printer.prints.first, equals('2.0.0'));
         });

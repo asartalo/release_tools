@@ -35,15 +35,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
         printer = context.printer;
       });
 
-      Future<String> getLicenseFileContents(
-          [String fileName = 'LICENSE']) async {
+      Future<String> getLicenseFileContents([
+        String fileName = 'LICENSE',
+      ]) async {
         final file = fs.file(fs.directory(workingDir).childFile(fileName));
         return file.readAsString();
       }
 
-      Future<File> writeLicenseContent(
-          [String fileName = 'LICENSE',
-          String content = originalLicenseContent]) async {
+      Future<File> writeLicenseContent([
+        String fileName = 'LICENSE',
+        String content = originalLicenseContent,
+      ]) async {
         final file = fs.directory(workingDir).childFile(fileName);
         await file.writeAsString(content);
         return file;
@@ -55,8 +57,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
         });
 
         test('throws StateError when no specified license file exists', () {
-          expect(() => runner.run([command, '--license', 'MY_LICENSE']),
-              throwsStateError);
+          expect(
+            () => runner.run([command, '--license', 'MY_LICENSE']),
+            throwsStateError,
+          );
         });
       });
 
@@ -79,15 +83,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
         test('it updates year on license file named "LICENSE.txt"', () async {
           await writeLicenseContent('LICENSE.txt');
           await runner.run([command]);
-          expect(await getLicenseFileContents('LICENSE.txt'),
-              equals(expectedContent));
+          expect(
+            await getLicenseFileContents('LICENSE.txt'),
+            equals(expectedContent),
+          );
         });
 
         test('it updates year on license file specified', () async {
           await writeLicenseContent('MY_LICENSE');
           await runner.run([command, '--license', 'MY_LICENSE']);
-          expect(await getLicenseFileContents('MY_LICENSE'),
-              equals(expectedContent));
+          expect(
+            await getLicenseFileContents('MY_LICENSE'),
+            equals(expectedContent),
+          );
         });
 
         group('if year is already updated', () {

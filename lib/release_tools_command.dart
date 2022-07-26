@@ -1,10 +1,10 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:conventional/conventional.dart';
-import 'package:release_tools/printer.dart';
 import 'package:yaml/yaml.dart';
 
 import 'git_exec.dart';
+import 'printer.dart';
 import 'project.dart';
 
 abstract class ReleaseToolsCommand extends Command {

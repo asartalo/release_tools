@@ -32,9 +32,11 @@ class UpdateVersionCommand extends ReleaseToolsCommand {
   final takesArguments = true;
 
   @override
-  final usageFooter = helpFooter('''
+  final usageFooter = helpFooter(
+    '''
 release_tools update_version 2.0.1
-release_tools udpate_version --file="README.md" --template="Current Version: [VERSION]"''');
+release_tools udpate_version --file="README.md" --template="Current Version: [VERSION]"''',
+  );
 
   UpdateVersionCommand({
     required this.project,
@@ -72,8 +74,11 @@ release_tools udpate_version --file="README.md" --template="Current Version: [VE
     await _updateVersionOnPubspecFile(await _getPubspecFile(), newVersion);
   }
 
-  Future<void> updateVersionOnFile(String newVersion,
-      {File? file, String template = ''}) async {
+  Future<void> updateVersionOnFile(
+    String newVersion, {
+    File? file,
+    String template = '',
+  }) async {
     final theFile = file ?? await _getPubspecFile();
     if (theFile.basename == pubspecFile) {
       await _updateVersionOnPubspecFile(theFile, newVersion);
@@ -85,7 +90,8 @@ release_tools udpate_version --file="README.md" --template="Current Version: [VE
   String _getNewVersion(List<String> arguments) {
     if (arguments.isEmpty) {
       throw ArgumentError(
-          'Please provide a version to update the pubspec.yaml to.');
+        'Please provide a version to update the pubspec.yaml to.',
+      );
     }
     return arguments.first;
   }
@@ -122,7 +128,9 @@ release_tools udpate_version --file="README.md" --template="Current Version: [VE
   }
 
   Future<void> _updateVersionOnPubspecFile(
-      File pubspecFile, String newVersion) async {
+    File pubspecFile,
+    String newVersion,
+  ) async {
     final contents = await pubspecFile.readAsString();
     final doc = loadYamlNode(contents) as YamlMap;
     final versionNode = doc.nodes['version'];
@@ -139,7 +147,10 @@ release_tools udpate_version --file="README.md" --template="Current Version: [VE
 }
 
 Future<void> _updateVersionOnFileWithTemplate(
-    File file, String template, String newVersion) async {
+  File file,
+  String template,
+  String newVersion,
+) async {
   final contents = await file.readAsString();
   await file.writeAsString(
     replaceVersionWithTemplate(contents, template, newVersion),
@@ -163,7 +174,8 @@ String replaceVersionWithTemplate(
   final prefix = template.substring(0, versionPosition);
   final suffix = template.substring(versionPosition + 9);
   final regex = RegExp(
-      "(${RegExp.escape(prefix)})($validSemverRegex)(${RegExp.escape(suffix)})");
+    "(${RegExp.escape(prefix)})($validSemverRegex)(${RegExp.escape(suffix)})",
+  );
 
   return contents.replaceAllMapped(regex, (match) {
     return '${match.group(1)}$version${match.group(8)}';

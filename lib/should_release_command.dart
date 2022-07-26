@@ -1,9 +1,9 @@
 import 'package:conventional/conventional.dart';
-import 'package:release_tools/release_tools_command.dart';
 
 import 'git_exec.dart';
 import 'help_footer.dart';
 import 'printer.dart';
+import 'release_tools_command.dart';
 
 class ShouldReleaseCommand extends ReleaseToolsCommand with GitCommand {
   @override
@@ -25,10 +25,12 @@ class ShouldReleaseCommand extends ReleaseToolsCommand with GitCommand {
   final takesArguments = true;
 
   @override
-  final usageFooter = helpFooter('''
+  final usageFooter = helpFooter(
+    '''
 release_tools should_release
 release_tools should_release --from=1571c70
-''');
+''',
+  );
 
   ShouldReleaseCommand({
     required this.git,

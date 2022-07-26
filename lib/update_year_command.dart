@@ -28,10 +28,12 @@ class UpdateYearCommand extends ReleaseToolsCommand {
   final takesArguments = true;
 
   @override
-  final usageFooter = helpFooter('''
+  final usageFooter = helpFooter(
+    '''
 release_tools update_year
 release_tools update_year --license=MY_LICENSE_FILE
-''');
+''',
+  );
 
   UpdateYearCommand({
     required this.project,
@@ -87,7 +89,8 @@ release_tools update_year --license=MY_LICENSE_FILE
     if (!found) {
       final validFiles = _defaultLicenseFiles.map((str) => '"$str"').join(', ');
       throw StateError(
-          'Unable to find a license file. Was looking for $validFiles');
+        'Unable to find a license file. Was looking for $validFiles',
+      );
     }
     return file;
   }

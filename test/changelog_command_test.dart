@@ -133,13 +133,18 @@ $originalChangelogContent''',
         test('prints change summary when successful', () async {
           git.commitsResponse = parseCommits([fix]);
           await runner.run([command, newVersion]);
-          expect(printer.prints.last, equals('''
+          expect(
+            printer.prints.last,
+            equals(
+              '''
 # 2.0.0 (2021-02-10)
 
 ## Bug Fixes
 
 - plug holes ([cf60800](commit/cf60800))
-'''));
+''',
+            ),
+          );
         });
 
         test('prints nothing when there are no releasable commits', () async {

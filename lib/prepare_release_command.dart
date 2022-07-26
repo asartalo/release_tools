@@ -1,12 +1,12 @@
 import 'package:conventional/conventional.dart';
-import 'package:release_tools/changelog_command.dart';
-import 'package:release_tools/printer.dart';
-import 'package:release_tools/remote_tag_id_command.dart';
-import 'package:release_tools/update_version_command.dart';
-import 'package:release_tools/version_helpers.dart';
 
+import 'changelog_command.dart';
 import 'next_version_command.dart';
+import 'printer.dart';
 import 'release_tools_command.dart';
+import 'remote_tag_id_command.dart';
+import 'update_version_command.dart';
+import 'version_helpers.dart';
 
 class PrepareReleaseCommand extends ReleaseToolsCommand {
   @override

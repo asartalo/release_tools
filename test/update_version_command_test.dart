@@ -76,7 +76,10 @@ void main() {
 
         test('updates pubspec.yaml', () async {
           final pubFile = await getPubFile();
-          expect(await pubFile.readAsString(), equals('''
+          expect(
+            await pubFile.readAsString(),
+            equals(
+              '''
 name: foo_bar
 description: A sample pubspec file._file
 version: 1.0.0
@@ -89,7 +92,9 @@ dependencies:
 
 dev_dependencies:
   test: ^1.14.4
-'''));
+''',
+            ),
+          );
         });
 
         test('it shows updated message', () {
@@ -99,10 +104,13 @@ dev_dependencies:
 
       group('updates a version to a specified file', () {
         setUp(() async {
-          await writeFile('README.md', '''
+          await writeFile(
+            'README.md',
+            '''
 Hello.
 This is version 1.0.0. Everything is awesome.
-''');
+''',
+          );
           await runner.run([
             'update_version',
             "--template=This is version [VERSION].",
@@ -113,10 +121,15 @@ This is version 1.0.0. Everything is awesome.
 
         test('it updates the version in file', () async {
           final contents = await getFileContents('README.md');
-          expect(contents, equals('''
+          expect(
+            contents,
+            equals(
+              '''
 Hello.
 This is version 2.0.0. Everything is awesome.
-'''));
+''',
+            ),
+          );
         });
       });
 

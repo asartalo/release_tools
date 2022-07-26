@@ -169,7 +169,8 @@ void main() {
             () async {
           final pubspecFile =
               fs.directory(workingDir).childFile('pubspec.yaml');
-          await pubspecFile.writeAsString('''
+          await pubspecFile.writeAsString(
+            '''
 name: foo_bar
 description: A sample pubspec file._file
 version: 2.0.0
@@ -182,7 +183,8 @@ dependencies:
 
 dev_dependencies:
   test: ^1.14.4
-''');
+''',
+          );
           git.commitsResponse = parseCommits([feat]);
           await runner.run([command]);
           expect(printer.prints.first, equals('2.1.0'));
@@ -194,7 +196,8 @@ dev_dependencies:
           expect(
             helpText,
             contains(
-                'Gets the next version number based on conventional commits.'),
+              'Gets the next version number based on conventional commits.',
+            ),
           );
           expect(helpText, contains('Usage:'));
         });
