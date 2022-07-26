@@ -8,6 +8,7 @@ import 'next_version_command.dart';
 import 'prepare_release_command.dart';
 import 'printer.dart';
 import 'project.dart';
+import 'release_tools_version.dart';
 import 'remote_tag_id_command.dart';
 import 'should_release_command.dart';
 import 'update_version_command.dart';
@@ -80,8 +81,18 @@ class ReleaseToolsRunner {
           changelogCommand: changelogCommand,
           updateVersionCommand: updateVersionCommand,
         ),
+      )
+      ..argParser.addFlag(
+        'version',
+        abbr: 'v',
+        negatable: false,
+        help: 'Show release_tools version',
       );
-
+    final args = cmd.argParser.parse(arguments);
+    if (args['version'] as bool) {
+      printer.println(releaseToolsVersion);
+      return;
+    }
     await cmd.run(arguments);
   }
 }

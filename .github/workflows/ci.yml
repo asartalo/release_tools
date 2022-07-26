@@ -98,15 +98,13 @@ jobs:
 
       - run: echo "RELEASING ${{ steps.nextVersion.outputs.value }}"
 
-      - name: Update version on pubspec.yaml
+      - name: Update versions
         if: steps.shouldRelease.outputs.value == 'yes'
         id: updateVersion
-        run: pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}
-
-      - name: Update version on README.md
-        if: steps.shouldRelease.outputs.value == 'yes'
-        id: updateVersionReadme
-        run: pub run release_tools update_version --file="README.md" --template="pub global activate release_tools [VERSION]" ${{ steps.nextVersion.outputs.value }}
+        run: |
+          pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}
+          pub run release_tools update_version --file="lib/release_tools_version.dart" ${{ steps.nextVersion.outputs.value }}
+          pub run release_tools update_version --file="README.md" --template="pub global activate release_tools [VERSION]" ${{ steps.nextVersion.outputs.value }}
 
       - name: Write changelog
         id: changelog
