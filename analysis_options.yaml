@@ -1,1 +1,10 @@
 include: package:lint/analysis_options.yaml
+
+linter:
+  rules:
+    - prefer_relative_imports
+    - avoid_relative_lib_imports
+
+analyzer:
+  errors:
+    always_use_package_imports: ignore

@@ -1,7 +1,5 @@
-// ignore_for_file: file_names
-
 import 'package:conventional/conventional.dart';
-import 'package:release_tools/exec.dart';
+import 'exec.dart';
 
 class GitExecException implements Exception {
   final String message;
@@ -24,27 +22,33 @@ class _GitExec implements GitExec {
   @override
   Future<List<Commit>> commits({String? from}) async {
     from ??= await firstHash();
-    final logs = _throwOnFail(await _execute(
-      'git',
-      '--no-pager log $from..HEAD --no-decorate'.split(' '),
-    ));
+    final logs = _throwOnFail(
+      await _execute(
+        'git',
+        '--no-pager log $from..HEAD --no-decorate'.split(' '),
+      ),
+    );
     return Commit.parseCommits(logs);
   }
 
   @override
   Future<String> hashForTag(String tag) async {
-    return _throwOnFail(await _execute(
-      'git',
-      'rev-parse $tag^{}'.split(' '),
-    ));
+    return _throwOnFail(
+      await _execute(
+        'git',
+        'rev-parse $tag^{}'.split(' '),
+      ),
+    );
   }
 
   @override
   Future<String> firstHash() async {
-    return _throwOnFail(await _execute(
-      'git',
-      'rev-list --max-parents=0 HEAD'.split(' '),
-    ));
+    return _throwOnFail(
+      await _execute(
+        'git',
+        'rev-list --max-parents=0 HEAD'.split(' '),
+      ),
+    );
   }
 
   Future<Execution> _execute(String cmd, List<String> args) {
@@ -59,16 +63,20 @@ class _GitExec implements GitExec {
   }
 
   @override
-  Future<String> lsRemoteTag(
-      {String tag = '', String remote = 'origin'}) async {
+  Future<String> lsRemoteTag({
+    String tag = '',
+    String remote = 'origin',
+  }) async {
     final args = ['ls-remote', '-q', '--tags', remote];
     if (tag.isNotEmpty) {
       args.add(tag);
     }
-    return _throwOnFail(await _execute(
-      'git',
-      args,
-    ));
+    return _throwOnFail(
+      await _execute(
+        'git',
+        args,
+      ),
+    );
   }
 }
 
@@ -97,8 +105,10 @@ class StubGitExec implements GitExec {
   }
 
   @override
-  Future<String> lsRemoteTag(
-      {String tag = '', String remote = 'origin'}) async {
+  Future<String> lsRemoteTag({
+    String tag = '',
+    String remote = 'origin',
+  }) async {
     lsRemoteTagArgs = {
       'tag': tag,
       'remote': remote,

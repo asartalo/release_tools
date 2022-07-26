@@ -23,9 +23,11 @@ class CurrentVersionCommand extends ReleaseToolsCommand with VersionCommand {
   final takesArguments = true;
 
   @override
-  final usageFooter = helpFooter('''
+  final usageFooter = helpFooter(
+    '''
 release_tools current_version
-''');
+''',
+  );
 
   CurrentVersionCommand({
     required this.project,

@@ -1,12 +1,12 @@
 import 'package:conventional/conventional.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:release_tools/version_helpers.dart';
 
 import 'git_exec.dart';
 import 'help_footer.dart';
 import 'printer.dart';
 import 'project.dart';
 import 'release_tools_command.dart';
+import 'version_helpers.dart';
 
 class NextVersionCommand extends ReleaseToolsCommand
     with GitCommand, VersionCommand {
@@ -33,11 +33,13 @@ class NextVersionCommand extends ReleaseToolsCommand
   final takesArguments = true;
 
   @override
-  final usageFooter = helpFooter('''
+  final usageFooter = helpFooter(
+    '''
 release_tools next_version # will check version on pubspec.yaml
 release_tools next_version 2.0.1
 release_tools next_version --from=3682c64 2.0.1
-''');
+''',
+  );
 
   NextVersionCommand({
     required this.git,

@@ -1,12 +1,12 @@
 import 'package:conventional/conventional.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:release_tools/version_helpers.dart';
 
 import 'git_exec.dart';
 import 'help_footer.dart';
 import 'printer.dart';
 import 'project.dart';
 import 'release_tools_command.dart';
+import 'version_helpers.dart';
 
 class ChangelogCommand extends ReleaseToolsCommand with GitCommand {
   final Project project;
@@ -31,10 +31,12 @@ class ChangelogCommand extends ReleaseToolsCommand with GitCommand {
   final takesArguments = true;
 
   @override
-  final usageFooter = helpFooter('''
+  final usageFooter = helpFooter(
+    '''
 release_tools changelog 2.0.1
 release_tools changelog --from=3682c64 2.0.1
-''');
+''',
+  );
 
   ChangelogCommand({
     required this.project,

@@ -242,7 +242,9 @@ dev_dependencies:
               test('it writes a change summary file', () async {
                 final summaryFile = getFile('RELEASE_SUMMARY.txt');
                 expect(
-                    await summaryFile.readAsString(), equals(expectedSummary));
+                  await summaryFile.readAsString(),
+                  equals(expectedSummary),
+                );
               });
 
               test('it writes a version file', () async {

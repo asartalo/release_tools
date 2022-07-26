@@ -1,8 +1,7 @@
-import 'package:release_tools/release_tools_command.dart';
-
 import 'git_exec.dart';
 import 'help_footer.dart';
 import 'printer.dart';
+import 'release_tools_command.dart';
 
 class RemoteTagIdCommand extends ReleaseToolsCommand {
   final GitExec git;
@@ -23,10 +22,12 @@ class RemoteTagIdCommand extends ReleaseToolsCommand {
   final takesArguments = true;
 
   @override
-  final usageFooter = helpFooter('''
+  final usageFooter = helpFooter(
+    '''
 release_tools remote_tag_id 2.0.1
 release_tools remote_tag_id 3.2.8 --remote=source
-''');
+''',
+  );
 
   RemoteTagIdCommand({
     required this.git,
