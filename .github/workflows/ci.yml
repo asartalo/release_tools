@@ -47,10 +47,7 @@ jobs:
         run: dart analyze .
 
       - name: Run Tests with coverage
-        run: dart test --coverage="coverage"
-
-      - name: Prepare coverage
-        run: dart pub run coverage:format_coverage --lcov --in=coverage --out=lcov.info --packages=.packages --report-on=lib
+        run: dart run coverage:test_with_coverage
 
       - name: Upload coverage
         uses: coverallsapp/github-action@v1.1.2
@@ -79,22 +76,22 @@ jobs:
 
       - name: Get current version
         id: currentVersion
-        run: echo "::set-output name=value::$(dart pub run release_tools current_version)"
+        run: echo "::set-output name=value::$(dart run release_tools current_version)"
 
       - name: Get commitId of last tag of that version
         id: lastCommitId
-        run: echo "::set-output name=value::$(dart pub run release_tools remote_tag_id ${{ steps.currentVersion.outputs.value }})"
+        run: echo "::set-output name=value::$(dart run release_tools remote_tag_id ${{ steps.currentVersion.outputs.value }})"
 
       - name: Use commitId to check if we should release
         id: shouldRelease
-        run: echo "::set-output name=value::$(dart pub run release_tools should_release --from ${{ steps.lastCommitId.outputs.value }})"
+        run: echo "::set-output name=value::$(dart run release_tools should_release --from ${{ steps.lastCommitId.outputs.value }})"
 
       - run: echo "Should we release? ${{ steps.shouldRelease.outputs.value }}"
 
       - name: If we should release get the next version
         if: steps.shouldRelease.outputs.value == 'yes'
         id: nextVersion
-        run: echo "::set-output name=value::$(dart pub run release_tools next_version --from ${{ steps.lastCommitId.outputs.value }})"
+        run: echo "::set-output name=value::$(dart run release_tools next_version --from ${{ steps.lastCommitId.outputs.value }})"
 
       - run: echo "RELEASING ${{ steps.nextVersion.outputs.value }}"
 
@@ -102,15 +99,15 @@ jobs:
         if: steps.shouldRelease.outputs.value == 'yes'
         id: updateVersion
         run: |
-          dart pub run release_tools update_version ${{ steps.nextVersion.outputs.value }}
-          dart pub run release_tools update_version --file="lib/release_tools_version.dart" ${{ steps.nextVersion.outputs.value }}
-          dart pub run release_tools update_version --file="README.md" --template="pub global activate release_tools [VERSION]" ${{ steps.nextVersion.outputs.value }}
+          dart run release_tools update_version ${{ steps.nextVersion.outputs.value }}
+          dart run release_tools update_version --file="lib/release_tools_version.dart" ${{ steps.nextVersion.outputs.value }}
+          dart run release_tools update_version --file="README.md" --template="pub global activate release_tools [VERSION]" ${{ steps.nextVersion.outputs.value }}
 
       - name: Write changelog
         id: changelog
         if: steps.shouldRelease.outputs.value == 'yes'
         run: |
-          output=$(dart pub run release_tools changelog --from ${{ steps.lastCommitId.outputs.value }} ${{ steps.nextVersion.outputs.value }})
+          output=$(dart run release_tools changelog --from ${{ steps.lastCommitId.outputs.value }} ${{ steps.nextVersion.outputs.value }})
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
