@@ -150,4 +150,4 @@ jobs:
 
       - name: Publish package
         if: steps.shouldRelease.outputs.value == 'yes'
-        run: pub publish -f
+        run: dart pub publish -f
