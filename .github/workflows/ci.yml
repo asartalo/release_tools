@@ -1,4 +1,4 @@
-name: build
+name: Test and Release
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 jobs:
   commitlint:
+    name: Commitlint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,13 +28,13 @@ jobs:
 
       - name: Store the branch name
         id: branchinfo
-        run: echo "::set-output name=branch::${BRANCH_NAME}"
+        run: echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
 
       - name: Check if we were able to save branch info
         run: echo ${{ steps.branchinfo.outputs.branch }}
 
       - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+        uses: dart-lang/setup-dart@v1
 
       - uses: actions/checkout@v3
 
@@ -56,42 +57,41 @@ jobs:
           path-to-lcov: coverage/lcov.info
 
   release:
-    name: Release
+    name: Prepare Release
     runs-on: ubuntu-latest
     needs: test
-    if: ${{ needs.test.outputs.branch == 'main' }}
+    if: github.event_name != 'pull_request' && needs.test.outputs.branch == 'main'
 
     steps:
-      - run: echo ${{ needs.test.outputs.branch }}
-
       - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+        uses: dart-lang/setup-dart@v1
 
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.PAT }}
 
       - name: Get dependencies
         run: dart pub get
 
       - name: Get current version
         id: currentVersion
-        run: echo "::set-output name=value::$(dart run release_tools current_version)"
+        run: echo "value=$(dart run release_tools current_version)" >> $GITHUB_OUTPUT
 
       - name: Get commitId of last tag of that version
         id: lastCommitId
-        run: echo "::set-output name=value::$(dart run release_tools remote_tag_id ${{ steps.currentVersion.outputs.value }})"
+        run: echo "value=$(dart run release_tools remote_tag_id ${{ steps.currentVersion.outputs.value }})" >> $GITHUB_OUTPUT
 
       - name: Use commitId to check if we should release
         id: shouldRelease
-        run: echo "::set-output name=value::$(dart run release_tools should_release --from ${{ steps.lastCommitId.outputs.value }})"
+        run: echo "value=$(dart run release_tools should_release --from ${{ steps.lastCommitId.outputs.value }})" >> $GITHUB_OUTPUT
 
       - run: echo "Should we release? ${{ steps.shouldRelease.outputs.value }}"
 
       - name: If we should release get the next version
         if: steps.shouldRelease.outputs.value == 'yes'
         id: nextVersion
-        run: echo "::set-output name=value::$(dart run release_tools next_version --from ${{ steps.lastCommitId.outputs.value }})"
+        run: echo "value=$(dart run release_tools next_version --from ${{ steps.lastCommitId.outputs.value }})" >> $GITHUB_OUTPUT
 
       - run: echo "RELEASING ${{ steps.nextVersion.outputs.value }}"
 
@@ -111,7 +111,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=summary::$output"
+          echo "summary=$output" >> $GITHUB_OUTPUT
 
       - name: Commit Release
         if: steps.shouldRelease.outputs.value == 'yes'
@@ -126,28 +126,12 @@ jobs:
       - name: Create Release
         if: steps.shouldRelease.outputs.value == 'yes'
         id: createRelease
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ steps.nextVersion.outputs.value }}
-          release_name: Release ${{ steps.nextVersion.outputs.value }}
+          token: ${{ secrets.PAT }}
+          tag: ${{ steps.nextVersion.outputs.value }}
+          name: Release ${{ steps.nextVersion.outputs.value }}
           body: |
             Changes in this Release
 
-            ${{ steps.changelog.outputs.summary }}
-
-          draft: false
-          prerelease: false
-
-      - name: Setup credentials
-        if: steps.shouldRelease.outputs.value == 'yes'
-        run: |
-          mkdir -p ~/.pub-cache
-          cat <<EOF > ~/.pub-cache/credentials.json
-          ${{ secrets.PUB_CREDENTIALS }}
-          EOF
-
-      - name: Publish package
-        if: steps.shouldRelease.outputs.value == 'yes'
-        run: dart pub publish -f
+            ${{ steps.nextVersion.outputs.value }}
