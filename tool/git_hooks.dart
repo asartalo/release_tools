@@ -22,7 +22,7 @@ Future<bool> preCommit() async {
   print('Running dart analyzer...');
   var valid = true;
   try {
-    final result = await Process.run('dartanalyzer', ['lib']);
+    final result = await Process.run('dart', ['analyze', 'lib']);
     if (result.exitCode != 0) {
       valid = false;
       print(result.stdout);
