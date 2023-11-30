@@ -104,7 +104,7 @@ void main() {
       late String result;
       late String successOutput;
 
-      String getLasatExecArgs() {
+      String getLastExecArgs() {
         final args = exec.executeArgs.last;
         return args.join(' ');
       }
@@ -122,18 +122,18 @@ void main() {
 
         test('with no tag and no remote', () async {
           result = await git.lsRemoteTag();
-          expect(getLasatExecArgs(), equals('git ls-remote -q --tags origin'));
+          expect(getLastExecArgs(), equals('git ls-remote -q --tags origin'));
         });
 
         test('with no tag but with remote', () async {
           result = await git.lsRemoteTag(remote: 'foo');
-          expect(getLasatExecArgs(), equals('git ls-remote -q --tags foo'));
+          expect(getLastExecArgs(), equals('git ls-remote -q --tags foo'));
         });
 
         test('with a tag but with no remote', () async {
           result = await git.lsRemoteTag(tag: '2.0.0');
           expect(
-            getLasatExecArgs(),
+            getLastExecArgs(),
             equals('git ls-remote -q --tags origin 2.0.0'),
           );
         });
