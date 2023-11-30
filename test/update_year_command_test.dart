@@ -62,6 +62,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
             throwsStateError,
           );
         });
+
+        test('throws StateError when no specified file exists', () {
+          expect(
+            () => runner.run([command, '--file', 'MY_FILE']),
+            throwsStateError,
+          );
+        });
       });
 
       group('happy paths', () {
@@ -98,6 +105,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
           );
         });
 
+        test('it updates year on file specified', () async {
+          await writeLicenseContent('MY_LICENSE');
+          await runner.run([command, '--file', 'MY_LICENSE']);
+          expect(
+            await getLicenseFileContents('MY_LICENSE'),
+            equals(expectedContent),
+          );
+        });
+
         group('if year is already updated', () {
           late File file;
           late DateTime modified;
@@ -127,7 +143,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
           final helpText = printer.prints.join('\n');
           expect(
             helpText,
-            contains('Updates year on license file.'),
+            contains('Updates year on file.'),
           );
           expect(helpText, contains('Usage:'));
         });

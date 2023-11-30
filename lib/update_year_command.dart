@@ -19,7 +19,7 @@ class UpdateYearCommand extends ReleaseToolsCommand {
   final name = 'update_year';
 
   @override
-  final description = 'Updates year on license file.';
+  final description = 'Updates year on file. Defaults to license files';
 
   @override
   final invocation = 'release_tools update_year';
@@ -31,7 +31,7 @@ class UpdateYearCommand extends ReleaseToolsCommand {
   final usageFooter = helpFooter(
     '''
 release_tools update_year
-release_tools update_year --license=MY_LICENSE_FILE
+release_tools update_year --file=MY_LICENSE_FILE
 ''',
   );
 
@@ -42,8 +42,13 @@ release_tools update_year --license=MY_LICENSE_FILE
   }) {
     argParser.addOption(
       'license',
-      help: 'specify a license file to update',
+      help: 'specify a file to update',
       abbr: 'l',
+    );
+    argParser.addOption(
+      'file',
+      help: 'specify a file to update',
+      abbr: 'f',
     );
   }
 
@@ -51,7 +56,8 @@ release_tools update_year --license=MY_LICENSE_FILE
   Future<void> run() async {
     final year = now.year;
     final args = ensureArgResults();
-    final specificFile = args['license'];
+    final specificFile =
+        args['file'] is String ? args['file'] : args['license'];
 
     final file = specificFile is String
         ? await _findLicenseFile(specificFile)

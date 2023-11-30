@@ -195,13 +195,13 @@ A sample changelog would be the following:
 
 ### update_year
 
-A simple tool for updating the year on LICENSE files. Note that the logic is
-really simple. It simply updates the first 4-digit number to the current year
-which may or may not be enough for your needs.
+A simple tool for updating the year on files ('LICENSE' file by default). Note
+that the logic is really simple. It simply updates the first 4-digit number to
+the current year which may or may not be enough for your needs.
 
 ```sh
 $ release_tools update_year
-$ release_tools update_year --license=MY_LICENSE_FILE
+$ release_tools update_year --file=MY_LICENSE_FILE
 ```
 
 ### remote_tag_id
