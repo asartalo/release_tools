@@ -25,7 +25,7 @@ jobs:
       branch: ${{ steps.branchinfo.outputs.branch }}
 
     steps:
-      - uses: asartalo/branch-name
+      - uses: nelonoel/branch-name@v1.0.1
 
       - name: Store the branch name
         id: branchinfo
