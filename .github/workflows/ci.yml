@@ -25,19 +25,17 @@ jobs:
       branch: ${{ steps.branchinfo.outputs.branch }}
 
     steps:
-      - uses: nelonoel/branch-name@v1.0.1
+      - uses: actions/checkout@v4
 
       - name: Store the branch name
         id: branchinfo
-        run: echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
       - name: Check if we were able to save branch info
         run: echo ${{ steps.branchinfo.outputs.branch }}
 
       - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1
-
-      - uses: actions/checkout@v4
 
       - name: Get dependencies
         run: dart pub get
