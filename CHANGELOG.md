@@ -1,3 +1,18 @@
+# 1.0.0 (2023-12-01)
+
+## Bug Fixes
+
+- new -v flag to show release_tools version ([4f4c4ce](commit/4f4c4ce))
+- update dependencies ([c4bba0a](commit/c4bba0a))
+
+## Features
+
+- **update_year:** file param as alias for license ([975eceb](commit/975eceb))
+- prepare_release runs update_year ([79d0fdf](commit/79d0fdf))
+- update dependencies and sdk ([0da127f](commit/0da127f))
+- **next_version:** ensureMajor flag option ([2aa2dd0](commit/2aa2dd0))
+- **prepare_release:** ensureMajor flag added ([02d4846](commit/02d4846))
+
 # 0.3.2 (2022-07-26)
 
 ## Bug Fixes
