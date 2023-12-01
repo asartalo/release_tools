@@ -38,6 +38,7 @@ class NextVersionCommand extends ReleaseToolsCommand
 release_tools next_version # will check version on pubspec.yaml
 release_tools next_version 2.0.1
 release_tools next_version --from=3682c64 2.0.1
+release_tools next_version --ensureMajor 0.2.5 # always version >= 1.0.0
 ''',
   );
 
@@ -61,6 +62,11 @@ release_tools next_version --from=3682c64 2.0.1
       abbr: 'n',
       help: 'Do not include build number in output',
     );
+    argParser.addFlag(
+      'ensureMajor',
+      abbr: 'm',
+      help: 'Ensure versions start with major version > 0',
+    );
   }
 
   @override
@@ -73,6 +79,7 @@ release_tools next_version --from=3682c64 2.0.1
       currentVersion,
       incrementBuild: incrementBuild,
       noBuild: args['noBuild'] as bool,
+      ensureMajor: args['ensureMajor'] as bool,
     );
     printer.println(theNextVersion);
   }
@@ -82,11 +89,14 @@ release_tools next_version --from=3682c64 2.0.1
     String currentVersion, {
     bool incrementBuild = false,
     bool noBuild = false,
+    bool ensureMajor = false,
   }) async {
+    final previousVersion = Version.parse(currentVersion);
     final newVersion = nextVersion(
-      Version.parse(currentVersion),
+      previousVersion,
       commits,
       incrementBuild: incrementBuild,
+      afterV1: ensureMajor,
     );
     return (noBuild ? versionWithoutBuild(newVersion) : newVersion).toString();
   }

@@ -72,7 +72,7 @@ void main() {
             result: '1.0.1',
             description: 'updates version to patch',
           ),
-          'when there is a new feature fix': _T(
+          'when there is a new feature plus fix': _T(
             commits: [feat, chore, fix],
             result: '1.1.0',
             description: 'updates minor version',
@@ -94,6 +94,68 @@ void main() {
             result: "2.2.1+1",
             description: 'no version change',
           ),
+          'when pre-major and there is a bug fix': _T(
+            commits: [chore, fix],
+            previousVersion: '0.0.1',
+            result: '0.0.2',
+            description: 'updates version to patch',
+          ),
+          'when pre-major and there is a new feature plus fix': _T(
+            commits: [feat, chore, fix],
+            previousVersion: '0.0.1',
+            result: '0.0.2',
+            description: 'updates version to patch',
+          ),
+          'when pre-major and there is a breaking change': _T(
+            commits: [feat, chore, breaking, fix],
+            previousVersion: '0.0.1',
+            result: '0.1.0',
+            description: 'updates minor version',
+          ),
+          'when pre-major and there are just chores plus build number': _T(
+            commits: [chore],
+            previousVersion: '0.0.1+1',
+            result: '0.0.1+1',
+            description: 'no version change',
+          ),
+
+          // ensureMajor
+          'when pre-major, ensureMajor flag set but no releasable commits': _T(
+            commits: [chore],
+            previousVersion: '0.0.1',
+            result: '0.0.1',
+            ensureMajor: true,
+            description: 'no version change',
+          ),
+          'when pre-major, ensureMajor flag set and there is a fix': _T(
+            commits: [chore, fix],
+            previousVersion: '0.0.1',
+            result: '1.0.0',
+            ensureMajor: true,
+            description: 'updates version to major version',
+          ),
+          'when pre-major, ensureMajor flag set and there is feature': _T(
+            commits: [chore, feat, fix],
+            previousVersion: '0.0.1',
+            result: '1.0.0',
+            ensureMajor: true,
+            description: 'updates version to major version',
+          ),
+          'when pre-major, ensureMajor flag set and breaking change present':
+              _T(
+            commits: [feat, chore, breaking, fix],
+            previousVersion: '0.0.1',
+            result: '1.0.0',
+            ensureMajor: true,
+            description: 'updates version to major version',
+          ),
+          'when ensureMajor flag set and there is a new feature plus fix': _T(
+            commits: [feat, chore, fix],
+            result: '1.1.0',
+            ensureMajor: true,
+            description: 'updates minor version',
+          ),
+
           'when there is a bug fix and with build number': _T(
             commits: [chore, fix],
             previousVersion: '5.6.7+2',
@@ -151,6 +213,9 @@ void main() {
               }
               if (data.noBuild) {
                 args.add('--noBuild');
+              }
+              if (data.ensureMajor) {
+                args.add('--ensureMajor');
               }
               args.add(version);
               await runner.run(args);
@@ -213,6 +278,7 @@ class _T {
   final String? previousVersion;
   final bool freezeBuild;
   final bool noBuild;
+  final bool ensureMajor;
   _T({
     required this.commits,
     required this.result,
@@ -220,6 +286,7 @@ class _T {
     this.previousVersion,
     this.freezeBuild = false,
     this.noBuild = false,
+    this.ensureMajor = false,
   });
 }
 
