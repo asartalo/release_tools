@@ -91,7 +91,7 @@ jobs:
       - name: If we should release get the next version
         if: steps.shouldRelease.outputs.value == 'yes'
         id: nextVersion
-        run: echo "value=$(dart run release_tools next_version --from ${{ steps.lastCommitId.outputs.value }})" >> $GITHUB_OUTPUT
+        run: echo "value=$(dart run release_tools next_version --ensureMajor --from ${{ steps.lastCommitId.outputs.value }})" >> $GITHUB_OUTPUT
 
       - run: echo "RELEASING ${{ steps.nextVersion.outputs.value }}"
 
