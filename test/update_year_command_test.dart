@@ -134,7 +134,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
           });
 
           test('it prints a friendly message', () {
-            expect(printer.prints.last, equals('File is already updated.'));
+            expect(printer.prints.last, contains('is already updated.'));
           });
         });
 

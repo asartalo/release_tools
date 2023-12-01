@@ -6,7 +6,7 @@ import 'project.dart';
 import 'release_tools_command.dart';
 
 final _yearRegexp = RegExp(r'\d{4}');
-const _defaultLicenseFiles = ['LICENSE', 'LICENSE.txt'];
+const defaultLicenseFiles = ['LICENSE', 'LICENSE.txt'];
 
 class UpdateYearCommand extends ReleaseToolsCommand {
   final Project project;
@@ -54,11 +54,20 @@ release_tools update_year --file=MY_LICENSE_FILE
 
   @override
   Future<void> run() async {
-    final year = now.year;
     final args = ensureArgResults();
-    final specificFile =
-        args['file'] is String ? args['file'] : args['license'];
+    final fileArg = args['file'];
+    final licenseArg = args['license'];
+    final specificFile = fileArg is String
+        ? fileArg
+        : licenseArg is String
+            ? licenseArg
+            : null;
 
+    await updateYearOnFile(specificFile);
+  }
+
+  Future<void> updateYearOnFile(String? specificFile) async {
+    final year = now.year;
     final file = specificFile is String
         ? await _findLicenseFile(specificFile)
         : await _findDefaultLicenseFiles();
@@ -70,7 +79,7 @@ release_tools update_year --file=MY_LICENSE_FILE
         'Year on ${file.basename} file has been updated to $year',
       );
     } else {
-      printer.println('File is already updated.');
+      printer.println('Year on ${file.basename} file is already updated.');
     }
   }
 
@@ -85,7 +94,7 @@ release_tools update_year --file=MY_LICENSE_FILE
   Future<File> _findDefaultLicenseFiles() async {
     late File file;
     bool found = false;
-    for (final fileName in _defaultLicenseFiles) {
+    for (final fileName in defaultLicenseFiles) {
       file = project.getFile(fileName);
       if (await file.exists()) {
         found = true;
@@ -93,7 +102,7 @@ release_tools update_year --file=MY_LICENSE_FILE
       }
     }
     if (!found) {
-      final validFiles = _defaultLicenseFiles.map((str) => '"$str"').join(', ');
+      final validFiles = defaultLicenseFiles.map((str) => '"$str"').join(', ');
       throw StateError(
         'Unable to find a license file. Was looking for $validFiles',
       );

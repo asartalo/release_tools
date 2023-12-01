@@ -6,6 +6,7 @@ import 'printer.dart';
 import 'release_tools_command.dart';
 import 'remote_tag_id_command.dart';
 import 'update_version_command.dart';
+import 'update_year_command.dart';
 import 'version_helpers.dart';
 
 class PrepareReleaseCommand extends ReleaseToolsCommand {
@@ -22,6 +23,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
   final RemoteTagIdCommand remoteTagIdCommand;
   final ChangelogCommand changelogCommand;
   final UpdateVersionCommand updateVersionCommand;
+  final UpdateYearCommand updateYearCommand;
 
   PrepareReleaseCommand({
     required this.printer,
@@ -29,6 +31,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     required this.remoteTagIdCommand,
     required this.changelogCommand,
     required this.updateVersionCommand,
+    required this.updateYearCommand,
   }) {
     argParser.addFlag(
       'writeSummary',
@@ -76,6 +79,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     );
 
     await updateVersionCommand.updateVersionOnFile(nextVersion);
+    await updateYearCommand.updateYearOnFile(null);
     if (summary is ChangeSummary) {
       if (args['writeSummary'] as bool) {
         final project = changelogCommand.project;

@@ -45,6 +45,12 @@ dev_dependencies:
 - eat healthy ([#3](issues/3)) ([cf60800](commit/cf60800))
 ''';
 
+      const originalLicenseContent = '''
+Copyright 2020 Juan de la Cruz
+
+Redistribution and use in source and binary forms, with or without...
+''';
+
       setUp(() async {
         final context = getContext(now: now);
         runner = context.runner;
@@ -56,6 +62,10 @@ dev_dependencies:
         // prepare changelog
         final file = fs.directory(workingDir).childFile('CHANGELOG.md');
         await file.writeAsString(originalChangelogContent);
+
+        // prepare license file
+        final licenseFile = fs.directory(workingDir).childFile('LICENSE');
+        await licenseFile.writeAsString(originalLicenseContent);
       });
 
       File getFile(String fileName) {
@@ -64,6 +74,11 @@ dev_dependencies:
 
       Future<String> getChangelogFileContents() async {
         final file = getFile('CHANGELOG.md');
+        return file.readAsString();
+      }
+
+      Future<String> getLicenseFileContents() async {
+        final file = getFile('LICENSE');
         return file.readAsString();
       }
 
@@ -113,6 +128,11 @@ dev_dependencies:
 
 - null-safety ([43cf9b7](commit/43cf9b7))
 ''';
+        const expectedLicenseContent = '''
+Copyright 2021 Juan de la Cruz
+
+Redistribution and use in source and binary forms, with or without...
+''';
         setUp(() => createPubspec(getPubspecContents()));
 
         group('when there is a tag from last release', () {
@@ -159,6 +179,13 @@ dev_dependencies:
               expect(
                 printer.prints.join('\n'),
                 contains('SUMMARY:\n\n$expectedSummary'),
+              );
+            });
+
+            test('it updates the license year', () async {
+              expect(
+                await getLicenseFileContents(),
+                equals(expectedLicenseContent),
               );
             });
           }

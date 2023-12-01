@@ -50,6 +50,11 @@ class ReleaseToolsRunner {
       printer: printer,
       project: project,
     );
+    final updateYearCommand = UpdateYearCommand(
+      project: project,
+      printer: printer,
+      now: now,
+    );
 
     final cmd = CommandRunner(
       "release_tools",
@@ -80,6 +85,7 @@ class ReleaseToolsRunner {
           remoteTagIdCommand: remoteTagIdCommand,
           changelogCommand: changelogCommand,
           updateVersionCommand: updateVersionCommand,
+          updateYearCommand: updateYearCommand,
         ),
       )
       ..argParser.addFlag(
