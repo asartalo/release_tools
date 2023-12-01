@@ -39,10 +39,16 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
       help:
           'Writes release information to files (VERSION.txt and RELEASE_SUMMARY.txt)',
     );
+    argParser.addFlag(
+      'ensureMajor',
+      abbr: 'm',
+      help: 'Ensure next version >= 1.0.0',
+    );
   }
 
   @override
   Future<void> run() async {
+    final args = ensureArgResults();
     final currentVersion = await nextVersionCommand.getVersionFromPubspec();
     final currentVersionWithoutBuild =
         versionStringWithoutBuild(currentVersion);
@@ -57,11 +63,13 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
       commits,
       currentVersion,
       incrementBuild: true,
+      ensureMajor: args['ensureMajor'] as bool,
     );
     if (nextVersion != currentVersion) {
       await _createRelease(
         commits: commits,
         nextVersion: nextVersion,
+        writeSummary: args['writeSummary'] as bool,
       );
     } else {
       printer.println('There are no releasable commits');
@@ -71,8 +79,8 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
   Future<void> _createRelease({
     required List<Commit> commits,
     required String nextVersion,
+    required bool writeSummary,
   }) async {
-    final args = ensureArgResults();
     final summary = await changelogCommand.writeChangelog(
       commits: commits,
       version: nextVersion,
@@ -81,7 +89,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     await updateVersionCommand.updateVersionOnFile(nextVersion);
     await updateYearCommand.updateYearOnFile(null);
     if (summary is ChangeSummary) {
-      if (args['writeSummary'] as bool) {
+      if (writeSummary) {
         final project = changelogCommand.project;
         final versionFile = project.getFile('VERSION.txt');
         await versionFile.writeAsString(nextVersion);

@@ -65,7 +65,7 @@ release_tools next_version --ensureMajor 0.2.5 # always version >= 1.0.0
     argParser.addFlag(
       'ensureMajor',
       abbr: 'm',
-      help: 'Ensure versions start with major version > 0',
+      help: 'Ensure next version >= 1.0.0',
     );
   }
 
