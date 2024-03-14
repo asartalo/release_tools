@@ -1,4 +1,3 @@
-import 'package:conventional/conventional.dart';
 import 'package:release_tools/git_exec.dart';
 import 'package:release_tools/printer.dart';
 import 'package:release_tools/release_tools_runner.dart';
@@ -97,11 +96,4 @@ class _LRT {
   final List<String> args;
   final Map<String, String> lrtArgs;
   _LRT({required this.description, required this.args, required this.lrtArgs});
-}
-
-List<Commit> parseCommits(List<String> commitList) {
-  if (commitList.isEmpty) {
-    return [];
-  }
-  return Commit.parseCommits(commitList.join('\r\n\r\n'));
 }

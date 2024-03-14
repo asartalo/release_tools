@@ -193,5 +193,5 @@ class MissingFileError extends StateError {
 }
 
 class InvalidPubspecError extends StateError {
-  InvalidPubspecError(String message) : super(message);
+  InvalidPubspecError(super.message);
 }

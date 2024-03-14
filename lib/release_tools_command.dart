@@ -61,7 +61,7 @@ mixin VersionCommand on ReleaseToolsCommand {
 }
 
 class NoPubspecFileFound extends StateError {
-  NoPubspecFileFound(String message) : super(message);
+  NoPubspecFileFound(super.message);
 }
 
 mixin GitCommand on ReleaseToolsCommand {
