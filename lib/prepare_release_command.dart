@@ -40,6 +40,12 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
           'Writes release information to files (VERSION.txt and RELEASE_SUMMARY.txt)',
     );
     argParser.addFlag(
+      'updateYear',
+      abbr: 'Y',
+      help:
+          'Also update year in license files. Better to eave this off if you are not sure.',
+    );
+    argParser.addFlag(
       'ensureMajor',
       abbr: 'm',
       help: 'Ensure next version >= 1.0.0',
@@ -70,6 +76,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
         commits: commits,
         nextVersion: nextVersion,
         writeSummary: args['writeSummary'] as bool,
+        updateYear: args['updateYear'] as bool,
       );
     } else {
       printer.println('There are no releasable commits');
@@ -80,6 +87,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     required List<Commit> commits,
     required String nextVersion,
     required bool writeSummary,
+    required bool updateYear,
   }) async {
     final summary = await changelogCommand.writeChangelog(
       commits: commits,
@@ -87,7 +95,11 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     );
 
     await updateVersionCommand.updateVersionOnFile(nextVersion);
-    await updateYearCommand.updateYearOnFile(null);
+
+    if (updateYear) {
+      await updateYearCommand.updateYearOnFile(null);
+    }
+
     if (summary is ChangeSummary) {
       if (writeSummary) {
         final project = changelogCommand.project;
