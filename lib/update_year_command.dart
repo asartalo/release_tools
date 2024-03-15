@@ -5,8 +5,15 @@ import 'printer.dart';
 import 'project.dart';
 import 'release_tools_command.dart';
 
-final _yearRegexp = RegExp(r'\d{4}');
+final _yearRegexp = RegExp(r'(\d{4,}(, |-))*(\d{4,})');
 const defaultLicenseFiles = ['LICENSE', 'LICENSE.txt'];
+
+class _ReplaceResult {
+  final String content;
+  final String yearPhrase;
+
+  _ReplaceResult(this.content, this.yearPhrase);
+}
 
 class UpdateYearCommand extends ReleaseToolsCommand {
   final Project project;
@@ -67,26 +74,50 @@ release_tools update_year --file=MY_LICENSE_FILE
   }
 
   Future<void> updateYearOnFile(String? specificFile) async {
-    final year = now.year;
     final file = specificFile is String
         ? await _findLicenseFile(specificFile)
         : await _findDefaultLicenseFiles();
     final contents = await file.readAsString();
     if (!_yearIsUpdated(contents)) {
-      await file
-          .writeAsString(contents.replaceFirst(_yearRegexp, year.toString()));
+      final replacement = _replaceYear(contents);
+      await file.writeAsString(replacement.content);
       printer.printSuccess(
-        'Year on ${file.basename} file has been updated to $year',
+        'Year on ${file.basename} file has been updated to "${replacement.yearPhrase}".',
       );
     } else {
       printer.println('Year on ${file.basename} file is already updated.');
     }
   }
 
+  _ReplaceResult _replaceYear(String content) {
+    final year = now.year;
+    final match = _yearRegexp.firstMatch(content);
+    String replacedContent = content;
+    String replacedYear = year.toString();
+
+    if (match is RegExpMatch) {
+      final yrStr = match.group(3)!;
+      final yearOnFile = int.parse(yrStr);
+      // print("\n\n===\nyearOnFile: $yearOnFile year: $year");
+      if (yearOnFile + 1 == year) {
+        final delimeter = match.group(2);
+        if (delimeter == '-') {
+          replacedYear = '$year';
+        } else {
+          replacedYear = '$yrStr-$year';
+        }
+      } else if (yearOnFile + 1 < year) {
+        replacedYear = '$yrStr, $year';
+      }
+      replacedContent = content.replaceFirst(yrStr, replacedYear);
+    }
+    return _ReplaceResult(replacedContent, replacedYear);
+  }
+
   bool _yearIsUpdated(String content) {
     final match = _yearRegexp.firstMatch(content);
     if (match is RegExpMatch) {
-      return now.year.toString() == match.group(0);
+      return now.year.toString() == match.group(3);
     }
     return false;
   }
