@@ -42,7 +42,7 @@ your project's own dependecies. Constrain it to a specific version to limit
 supply-chain exploits.
 
 ```sh
-$ pub global activate release_tools 1.0.0
+$ pub global activate release_tools 2.0.0
 ```
 
 ## Scripts

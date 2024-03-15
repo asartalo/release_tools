@@ -1,3 +1,10 @@
+# 2.0.0 (2024-03-15)
+
+## BREAKING CHANGES
+
+- prepare_release command does not update license year by default ([0c35fb1](commit/0c35fb1))
+- correct update year command for license files ([6ccf3c4](commit/6ccf3c4))
+
 # 1.0.0 (2023-12-01)
 
 ## Bug Fixes

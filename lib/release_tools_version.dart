@@ -1,1 +1,1 @@
-const releaseToolsVersion = '1.0.0';
+const releaseToolsVersion = '2.0.0';
