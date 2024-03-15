@@ -195,9 +195,32 @@ A sample changelog would be the following:
 
 ### update_year
 
-A simple tool for updating the year on files ('LICENSE' file by default). Note
-that the logic is really simple. It simply updates the first 4-digit number to
-the current year which may or may not be enough for your needs.
+A tool for updating the year on files ('LICENSE' file by default). Note that the
+logic for finding the year is fairly simple. It considers the first 4-digit
+number to be the year.
+
+The update result is more complex however. For the following examples, assume
+that the current year is 2021.
+
+On the left column is the copyright year value on the file, on the right is the
+updated value.
+
+| Year on File | Updated Year     |
+| ------------ | ---------------- |
+| 2020         | 2020-2021        |
+| 2021         | 2021             |
+| 2019         | 2019, 2021       |
+| 2017-2019    | 2017-2019, 2021  |
+| 2018, 2020   | 2018, 2020-2021  |
+| 2017, 2019   | 2017, 2019, 2021 |
+
+Note that updating the copyright year is not necessary. It is better to simply
+use the first copyright year and leave it than to update it incorrectly.
+
+On version 1.0 and below, the default behavior of this command was to simply
+overwrite the year with the current year. This has since been changed to a more
+correct behavior. If you used this command before, you may want to check your
+license files for correctness.
 
 ```sh
 $ release_tools update_year
@@ -283,6 +306,17 @@ $ release_tools prepare_release -w
 
 This will create two files, `VERSION.txt` and `RELEASE_SUMMARY.txt` which will
 contain just the version for release and the summary of changes, respectively.
+
+If you need to update the license year, you can pass the `-Y` flag. Note
+however, that this is not necessary. See section on `update_year` for more
+information.
+
+```sh
+$ release_tools prepare_release -Y
+```
+
+On version 1.0, the default behavior was to update the year. This has since been
+moved to th `-Y` flag to avoid unnecessary updates.
 
 ## Similar Tools
 

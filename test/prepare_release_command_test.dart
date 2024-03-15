@@ -129,7 +129,7 @@ Redistribution and use in source and binary forms, with or without...
 - null-safety ([43cf9b7](commit/43cf9b7))
 ''';
         const expectedLicenseContent = '''
-Copyright 2021 Juan de la Cruz
+Copyright 2020-2021 Juan de la Cruz
 
 Redistribution and use in source and binary forms, with or without...
 ''';
@@ -182,11 +182,24 @@ Redistribution and use in source and binary forms, with or without...
               );
             });
 
-            test('it updates the license year', () async {
+            test('it does not update the license year by default', () async {
               expect(
                 await getLicenseFileContents(),
-                equals(expectedLicenseContent),
+                equals(originalLicenseContent),
               );
+            });
+
+            group('when passed with -Y', () {
+              setUp(() async {
+                await runner.run([command, '-wY']);
+              });
+
+              test('it updates the license year', () async {
+                expect(
+                  await getLicenseFileContents(),
+                  equals(expectedLicenseContent),
+                );
+              });
             });
           }
 
