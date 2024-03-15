@@ -1,12 +1,12 @@
 import 'package:conventional/conventional.dart';
+import 'package:release_tools/commands/should_release_command.dart';
 import 'package:release_tools/git_exec.dart';
 import 'package:release_tools/printer.dart';
 import 'package:release_tools/release_tools_runner.dart';
-import 'package:release_tools/should_release_command.dart';
 import 'package:test/test.dart';
 
-import 'fixtures.dart';
-import 'runner_setup.dart';
+import '../fixtures.dart';
+import '../runner_setup.dart';
 
 void main() {
   group(ShouldReleaseCommand, () {

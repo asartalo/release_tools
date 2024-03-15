@@ -1,8 +1,8 @@
 import 'package:file/file.dart';
 
-import 'help_footer.dart';
-import 'printer.dart';
-import 'project.dart';
+import '../help_footer.dart';
+import '../printer.dart';
+import '../project.dart';
 import 'release_tools_command.dart';
 
 final _yearRegexp = RegExp(r'(\d{4,}(, |-))*(\d{4,})');

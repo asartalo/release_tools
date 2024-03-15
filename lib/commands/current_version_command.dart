@@ -1,6 +1,6 @@
-import 'help_footer.dart';
-import 'printer.dart';
-import 'project.dart';
+import '../help_footer.dart';
+import '../printer.dart';
+import '../project.dart';
 import 'release_tools_command.dart';
 
 class CurrentVersionCommand extends ReleaseToolsCommand with VersionCommand {

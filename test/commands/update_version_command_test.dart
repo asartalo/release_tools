@@ -1,10 +1,11 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:release_tools/commands/update_version_command.dart';
 import 'package:release_tools/printer.dart';
 import 'package:release_tools/release_tools_runner.dart';
-import 'package:release_tools/update_version_command.dart';
 import 'package:test/test.dart';
-import 'runner_setup.dart';
+
+import '../runner_setup.dart';
 
 void main() {
   group(UpdateVersionCommand, () {

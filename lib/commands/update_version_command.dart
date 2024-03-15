@@ -2,9 +2,9 @@ import 'package:args/args.dart';
 import 'package:file/file.dart';
 import 'package:yaml/yaml.dart';
 
-import 'help_footer.dart';
-import 'printer.dart';
-import 'project.dart';
+import '../help_footer.dart';
+import '../printer.dart';
+import '../project.dart';
 import 'release_tools_command.dart';
 
 // Taken from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string

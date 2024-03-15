@@ -3,9 +3,9 @@ import 'package:args/command_runner.dart';
 import 'package:conventional/conventional.dart';
 import 'package:yaml/yaml.dart';
 
-import 'git_exec.dart';
-import 'printer.dart';
-import 'project.dart';
+import '../git_exec.dart';
+import '../printer.dart';
+import '../project.dart';
 
 abstract class ReleaseToolsCommand extends Command {
   Printer get printer;

@@ -1,18 +1,18 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 
-import 'changelog_command.dart';
-import 'current_version_command.dart';
+import 'commands/changelog_command.dart';
+import 'commands/current_version_command.dart';
+import 'commands/next_version_command.dart';
+import 'commands/prepare_release_command.dart';
+import 'commands/remote_tag_id_command.dart';
+import 'commands/should_release_command.dart';
+import 'commands/update_version_command.dart';
+import 'commands/update_year_command.dart';
 import 'git_exec.dart';
-import 'next_version_command.dart';
-import 'prepare_release_command.dart';
 import 'printer.dart';
 import 'project.dart';
 import 'release_tools_version.dart';
-import 'remote_tag_id_command.dart';
-import 'should_release_command.dart';
-import 'update_version_command.dart';
-import 'update_year_command.dart';
 
 class ReleaseToolsRunner {
   final GitExec git;

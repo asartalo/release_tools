@@ -1,8 +1,8 @@
 import 'package:conventional/conventional.dart';
 
-import 'git_exec.dart';
-import 'help_footer.dart';
-import 'printer.dart';
+import '../git_exec.dart';
+import '../help_footer.dart';
+import '../printer.dart';
 import 'release_tools_command.dart';
 
 class ShouldReleaseCommand extends ReleaseToolsCommand with GitCommand {

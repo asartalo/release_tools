@@ -1,12 +1,12 @@
 import 'package:conventional/conventional.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import 'git_exec.dart';
-import 'help_footer.dart';
-import 'printer.dart';
-import 'project.dart';
+import '../git_exec.dart';
+import '../help_footer.dart';
+import '../printer.dart';
+import '../project.dart';
+import '../version_helpers.dart';
 import 'release_tools_command.dart';
-import 'version_helpers.dart';
 
 class NextVersionCommand extends ReleaseToolsCommand
     with GitCommand, VersionCommand {
