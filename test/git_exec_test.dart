@@ -3,7 +3,7 @@ import 'package:release_tools/exec.dart';
 import 'package:release_tools/git_exec.dart';
 import 'package:test/test.dart';
 
-import 'fixtures.dart';
+import 'fixtures/fixtures.dart';
 
 void main() {
   group(GitExec, () {

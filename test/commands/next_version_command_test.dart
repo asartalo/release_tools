@@ -6,7 +6,7 @@ import 'package:release_tools/printer.dart';
 import 'package:release_tools/release_tools_runner.dart';
 import 'package:test/test.dart';
 
-import '../fixtures.dart';
+import '../fixtures/fixtures.dart';
 import '../runner_setup.dart';
 
 void main() {

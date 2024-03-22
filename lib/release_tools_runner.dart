@@ -3,6 +3,7 @@ import 'package:file/file.dart';
 
 import 'commands/changelog_command.dart';
 import 'commands/current_version_command.dart';
+import 'commands/license_headers_command.dart';
 import 'commands/next_version_command.dart';
 import 'commands/prepare_release_command.dart';
 import 'commands/remote_tag_id_command.dart';
@@ -55,6 +56,11 @@ class ReleaseToolsRunner {
       printer: printer,
       now: now,
     );
+    final licenseHeadersCommand = LicenseHeadersCommand(
+      project: project,
+      printer: printer,
+      now: now,
+    );
 
     final cmd = CommandRunner(
       "release_tools",
@@ -70,6 +76,7 @@ class ReleaseToolsRunner {
           now: now,
         ),
       )
+      ..addCommand(licenseHeadersCommand)
       ..addCommand(remoteTagIdCommand)
       ..addCommand(
         CurrentVersionCommand(

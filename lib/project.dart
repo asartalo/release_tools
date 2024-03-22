@@ -40,4 +40,15 @@ class Project {
   Future<String> getPubspecContents() {
     return pubspec().readAsString();
   }
+
+  Future<List<File>> getFiles() async {
+    final dir = fs.directory(workingDir);
+    final entities = await dir
+        .list(
+          recursive: true,
+          followLinks: false,
+        )
+        .toList();
+    return entities.whereType<File>().toList();
+  }
 }

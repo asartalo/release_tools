@@ -20,6 +20,7 @@ dev_dependencies:
   # git_hooks: ^2.0.0 # use this when null-safe version is officially available
   git_hooks: ^1.0.1
   lint: ^2.2.0
+  path: any
   test: ^1.24.9
 
 executables:
