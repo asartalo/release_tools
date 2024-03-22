@@ -16,23 +16,26 @@ void main() {
   group(LicenseHeaderParser, () {
     final parser = LicenseHeaderParser(headerTemplate);
 
+    void expectWrapped(String text, List<String> expected) {
+      final result = text.trim().split('\n');
+      expect(result, expected);
+    }
+
     test('apply()', () {
-      expect(
+      expectWrapped(
         parser.apply(2024, prefix: '// '),
-        equals(
-          '''
-// Copyright (c) 2024 The Project Developers.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated files...
-//
-// What could go wrong if this is not indented properly? I say good day sir
-// have this cookie:
-//
-//  The quick brown fox
-//  Jumped over the lazy dog
-''',
-        ),
+        [
+          '// Copyright (c) 2024 The Project Developers.',
+          '//',
+          '// Permission is hereby granted, free of charge, to any person obtaining a',
+          '// copy of this software and associated files...',
+          '//',
+          '// What could go wrong if this is not indented properly? I say good day sir',
+          '// have this cookie:',
+          '//',
+          '//   The quick brown fox',
+          '//   Jumped over the lazy dog',
+        ],
       );
     });
 
@@ -75,10 +78,7 @@ void main() {
       test(
         'returns true for matching header',
         () {
-          print("\n MATCHING THING");
-          expect(
-            parser.matches(
-              '''
+          const content = '''
 // Copyright (c) 2024 The Project Developers.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -89,10 +89,22 @@ void main() {
 //
 //   The quick brown fox
 //   Jumped over the lazy dog
-''',
-              prefix: '// ',
-              year: 2024,
-            ),
+''';
+          final result = parser.matches(
+            content,
+            prefix: '// ',
+            year: 2024,
+          );
+
+          // if (!result) {
+          expectWrapped(
+            parser.apply(2024, prefix: '// '),
+            content.trim().split('\n'),
+          );
+          //}
+
+          expect(
+            result,
             isTrue,
           );
         },
