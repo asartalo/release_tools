@@ -7,12 +7,6 @@ on:
 
 # Publish using custom workflow
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check tag
-        run: echo "${{ github.ref_name }}"
-
   publish:
     permissions:
       id-token: write # Required for authentication using OIDC
