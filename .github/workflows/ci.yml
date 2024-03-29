@@ -130,16 +130,17 @@ jobs:
           token: ${{ secrets.PAT }}
           tag: ${{ steps.nextVersion.outputs.value }}
           name: Release ${{ steps.nextVersion.outputs.value }}
+          commit: release
           body: |
             Changes in this Release
 
             ${{ steps.nextVersion.outputs.value }}
 
-      - name: Merge back to main
-        if: steps.shouldRelease.outputs.value == 'yes'
-        run: |
-          git checkout main
-          git pull
-          git merge release
-          git commit -m "chore(merge_back): merge from release ${{ steps.nextVersion.outputs.value }}"
-          git push
+      # - name: Merge back to main
+      #   if: steps.shouldRelease.outputs.value == 'yes'
+      #   run: |
+      #     git checkout main
+      #     git pull
+      #     git merge release
+      #     git commit -m "chore(merge_back): merge from release ${{ steps.nextVersion.outputs.value }}"
+      #     git push
