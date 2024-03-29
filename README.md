@@ -133,18 +133,28 @@ $ release_tools next_version 1.0.1+1
 # 1.1.0+2
 ```
 
-If you don't want this behavior, pass the `--freezeBuild` flag.
+If you don't want this behavior, pass the `--freeze-build` flag.
 
 ```sh
-$ release_tools next_version --freezeBuild 1.0.1+1
+$ release_tools next_version --freeze-build 1.0.1+1
 # 1.1.0+1
 ```
 
-To output just the version without the build number, pass the `--noBuild` flag.
+To output just the version without the build number, pass the `--no-build` flag.
 
 ```sh
-$ release_tools next_version --noBuild 1.0.1+1
+$ release_tools next_version --no-build 1.0.1+1
 # 1.1.0
+```
+
+If you want to ensure that the next version is a major version and not a
+pre-release, use the `--ensure-major` flag.
+
+```sh
+$ release_tools next_version 0.2.3
+# 0.4.3
+$ release_tools next_version --ensure-major 0.2.3
+# 1.0.0
 ```
 
 ### should_release

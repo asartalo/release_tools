@@ -38,7 +38,9 @@ class NextVersionCommand extends ReleaseToolsCommand
 release_tools next_version # will check version on pubspec.yaml
 release_tools next_version 2.0.1
 release_tools next_version --from=3682c64 2.0.1
-release_tools next_version --ensureMajor 0.2.5 # always version >= 1.0.0
+release_tools next_version --ensure-major 0.2.5 # always version >= 1.0.0
+release_tools next_version 2.1.3+24 # 2.1.4+25
+release_tools next_version --no-build 2.1.3+24 # 2.1.4
 ''',
   );
 
@@ -53,19 +55,22 @@ release_tools next_version --ensureMajor 0.2.5 # always version >= 1.0.0
 
   void incrementBuildFromOption() {
     argParser.addFlag(
-      'freezeBuild',
+      'freeze-build',
       abbr: 'b',
       help: 'Do not increment build number',
+      aliases: ['freezeBuild'],
     );
     argParser.addFlag(
-      'noBuild',
+      'no-build',
       abbr: 'n',
       help: 'Do not include build number in output',
+      aliases: ['noBuild'],
     );
     argParser.addFlag(
-      'ensureMajor',
+      'ensure-major',
       abbr: 'm',
       help: 'Ensure next version >= 1.0.0',
+      aliases: ['ensureMajor'],
     );
   }
 
@@ -73,13 +78,13 @@ release_tools next_version --ensureMajor 0.2.5 # always version >= 1.0.0
   Future<void> run() async {
     final currentVersion = await getVersionFromArgsOrPubspec();
     final args = ensureArgResults();
-    final incrementBuild = !(args['freezeBuild'] as bool);
+    final incrementBuild = !(args['freeze-build'] as bool);
     final theNextVersion = await getNextVersionFromString(
       await getCommits(),
       currentVersion,
       incrementBuild: incrementBuild,
-      noBuild: args['noBuild'] as bool,
-      ensureMajor: args['ensureMajor'] as bool,
+      noBuild: args['no-build'] as bool,
+      ensureMajor: args['ensure-major'] as bool,
     );
     printer.println(theNextVersion);
   }

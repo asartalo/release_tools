@@ -209,13 +209,13 @@ void main() {
               }
               final args = [command];
               if (data.freezeBuild) {
-                args.add('--freezeBuild');
+                args.add('--freeze-build');
               }
               if (data.noBuild) {
-                args.add('--noBuild');
+                args.add('--no-build');
               }
               if (data.ensureMajor) {
-                args.add('--ensureMajor');
+                args.add('--ensure-major');
               }
               args.add(version);
               await runner.run(args);
