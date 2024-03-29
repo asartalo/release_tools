@@ -71,6 +71,37 @@ dev_dependencies:
           await runner.run([command]);
           expect(printer.prints.first, equals('2.0.0'));
         });
+
+        test('prints the version with build number', () async {
+          final pubspecFile =
+              fs.directory(workingDir).childFile('pubspec.yaml');
+          await pubspecFile.writeAsString(
+            '''
+name: foo_bar
+description: A sample pubspec file._file
+version: 2.1.3+4
+''',
+          );
+          await runner.run([command]);
+          expect(printer.prints.first, equals('2.1.3+4'));
+        });
+
+        test(
+          'prints the version without build number using no-build flag',
+          () async {
+            final pubspecFile =
+                fs.directory(workingDir).childFile('pubspec.yaml');
+            await pubspecFile.writeAsString(
+              '''
+name: foo_bar
+description: A sample pubspec file._file
+version: 2.1.3+4
+''',
+            );
+            await runner.run([command, '--no-build']);
+            expect(printer.prints.first, equals('2.1.3'));
+          },
+        );
       });
     });
   });
