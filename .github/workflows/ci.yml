@@ -134,7 +134,7 @@ jobs:
           body: |
             Changes in this Release
 
-            ${{ steps.nextVersion.outputs.value }}
+            ${{ steps.changelog.outputs.summary }}
 
       # - name: Merge back to main
       #   if: steps.shouldRelease.outputs.value == 'yes'
