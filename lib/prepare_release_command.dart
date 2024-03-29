@@ -44,7 +44,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
       'update-year',
       abbr: 'Y',
       help:
-          'Also update year in license files. Better to eave this off if you are not sure.',
+          'Also update year in license files. Better to leave this off if you are not sure.',
       aliases: ['updateYear'],
     );
     argParser.addFlag(
