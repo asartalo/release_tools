@@ -317,6 +317,9 @@ $ release_tools prepare_release -w
 This will create two files, `VERSION.txt` and `RELEASE_SUMMARY.txt` which will
 contain just the version for release and the summary of changes, respectively.
 
+If you need a version without the build number/part, pass `-n` flag and it will
+write that version to a `VERSION-NO-BUILD.txt`.
+
 If you need to update the license year, you can pass the `-Y` flag. Note
 however, that this is not necessary. See section on `update_year` for more
 information.
