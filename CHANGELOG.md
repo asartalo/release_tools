@@ -1,3 +1,9 @@
+# 2.1.1 (2024-03-29)
+
+## Bug Fixes
+
+- prepare_release update-year spelling ([40d1b8f](commit/40d1b8f))
+
 # 2.1.0 (2024-03-29)
 
 ## Features
