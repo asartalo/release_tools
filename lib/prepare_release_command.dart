@@ -34,21 +34,31 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     required this.updateYearCommand,
   }) {
     argParser.addFlag(
-      'writeSummary',
+      'write-summary',
       abbr: 'w',
       help:
           'Writes release information to files (VERSION.txt and RELEASE_SUMMARY.txt)',
+      aliases: ['writeSummary'],
     );
     argParser.addFlag(
-      'updateYear',
+      'update-year',
       abbr: 'Y',
       help:
           'Also update year in license files. Better to eave this off if you are not sure.',
+      aliases: ['updateYear'],
     );
     argParser.addFlag(
-      'ensureMajor',
+      'ensure-major',
       abbr: 'm',
       help: 'Ensure next version >= 1.0.0',
+      aliases: ['ensureMajor'],
+    );
+    argParser.addFlag(
+      'no-build',
+      abbr: 'n',
+      help:
+          'When paired with --write-summary, it will also write with VERSION-NO-BUILD.txt with no-build number',
+      aliases: ['no-build'],
     );
   }
 
@@ -69,14 +79,15 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
       commits,
       currentVersion,
       incrementBuild: true,
-      ensureMajor: args['ensureMajor'] as bool,
+      ensureMajor: args['ensure-major'] as bool,
     );
     if (nextVersion != currentVersion) {
       await _createRelease(
         commits: commits,
         nextVersion: nextVersion,
-        writeSummary: args['writeSummary'] as bool,
-        updateYear: args['updateYear'] as bool,
+        writeSummary: args['write-summary'] as bool,
+        updateYear: args['update-year'] as bool,
+        noBuild: args['no-build'] as bool,
       );
     } else {
       printer.println('There are no releasable commits');
@@ -88,6 +99,7 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     required String nextVersion,
     required bool writeSummary,
     required bool updateYear,
+    required bool noBuild,
   }) async {
     final summary = await changelogCommand.writeChangelog(
       commits: commits,
@@ -103,11 +115,18 @@ class PrepareReleaseCommand extends ReleaseToolsCommand {
     if (summary is ChangeSummary) {
       if (writeSummary) {
         final project = changelogCommand.project;
-        final versionFile = project.getFile('VERSION.txt');
-        await versionFile.writeAsString(nextVersion);
 
         final summaryFile = project.getFile('RELEASE_SUMMARY.txt');
         await summaryFile.writeAsString(summary.toMarkdown());
+
+        final versionFile = project.getFile('VERSION.txt');
+        await versionFile.writeAsString(nextVersion);
+
+        if (noBuild) {
+          final noBuildVersion = versionStringWithoutBuild(nextVersion);
+          final noBuildVersionFile = project.getFile('VERSION-NO-BUILD.txt');
+          await noBuildVersionFile.writeAsString(noBuildVersion);
+        }
       }
 
       printer.printSuccess('Version bumped to: $nextVersion\n');

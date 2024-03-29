@@ -390,6 +390,24 @@ Redistribution and use in source and binary forms, with or without...
                 expect(await versionFile.readAsString(), equals('2.0.0+2'));
               });
             });
+
+            group('when passed with -w and --no-build', () {
+              setUp(() async {
+                await runner.run([command, '-w', '--no-build']);
+              });
+
+              successTest();
+
+              test('it still writes a version file', () async {
+                final versionFile = getFile('VERSION.txt');
+                expect(await versionFile.readAsString(), equals('2.0.0+2'));
+              });
+
+              test('it also writes a no-build version file', () async {
+                final versionFile = getFile('VERSION-NO-BUILD.txt');
+                expect(await versionFile.readAsString(), equals('2.0.0'));
+              });
+            });
           });
         });
 
