@@ -6,6 +6,14 @@
 - **next_version:** use dash-case for flags ([d31d7b2](commit/d31d7b2))
 - **prepare_release:** no-build flag for writing no-build version ([a8d71ea](commit/a8d71ea))
 
+# 2.1.0 (2024-03-29)
+
+## Features
+
+- **current_version:** no-build flag ([b0d56f0](commit/b0d56f0))
+- **next_version:** use dash-case for flags ([d31d7b2](commit/d31d7b2))
+- **prepare_release:** no-build flag for writing no-build version ([a8d71ea](commit/a8d71ea))
+
 # 2.0.0 (2024-03-15)
 
 ## BREAKING CHANGES
