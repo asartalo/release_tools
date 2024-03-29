@@ -59,7 +59,7 @@ jobs:
     name: Prepare Release
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name != 'pull_request' && needs.test.outputs.branch == 'main'
+    if: github.event_name != 'pull_request' && needs.test.outputs.branch == 'release'
 
     steps:
       - name: Setup Dart SDK
